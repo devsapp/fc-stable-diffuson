@@ -1,6 +1,6 @@
 edition: 1.0.0
 name: fc-stable-diffusion
-access: {{access}}
+access: default
 vars:
   region: 'cn-shanghai'
   service: 'fc-stable-diffuson'
@@ -59,7 +59,7 @@ services:
     component: fc
     actions:
       pre-deploy:
-        - run: npm i
+        - run: npm i --force
           path: ./code
     props:
       region: ${vars.region}
