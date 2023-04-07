@@ -1,0 +1,111 @@
+edition: 1.0.0
+name: fc-stable-diffusion
+access: {{access}}
+vars:
+  region: 'cn-shanghai'
+  service: 'fc-stable-diffuson'
+services:
+  stable-diffusion-original:
+    component: fc
+    props:
+      region: ${vars.region}
+      service:
+        description: stable-diffusion
+        internetAccess: true
+        ossMountConfig:
+          mountPoints: []
+        name: ${vars.service}
+      function:
+        handler: index.handler
+        timeout: 7200
+        diskSize: 10240
+        caPort: 7860
+        instanceType: fc.gpu.tesla.1
+        runtime: custom-container
+        cpu: 8
+        customContainerConfig:
+          args: ''
+          accelerationType: Default
+          image: registry.cn-shanghai.aliyuncs.com/vipas/stable-diffusion-web:v2
+          accelerationInfo:
+            status: Preparing
+          command: ''
+          webServerMode: true
+        instanceConcurrency: 1
+        memorySize: 32768
+        environmentVariables: {}
+        gpuMemorySize: 16384
+        name: sd-server
+        asyncConfiguration: {}
+      triggers:
+        - name: defaultTrigger
+          description: ''
+          type: http
+          qualifier: LATEST
+          config:
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            authType: anonymous
+            disableURLInternet: false
+      customDomains:
+        - domainName: auto
+          protocol: HTTP
+          routeConfigs:
+            - path: /*
+  stable-diffusion-portal:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: npm i
+          path: ./code
+    props:
+      region: ${vars.region}
+      service:
+        description: stable-diffusion
+        internetAccess: true
+        ossMountConfig:
+          mountPoints: []
+        name: ${vars.service}
+      function:
+        handler: index.handler
+        description: stable-diffusion web界面
+        timeout: 6000
+        diskSize: 512
+        caPort: 4000
+        layers:
+          - acs:fc:cn-shanghai:official:layers/Nodejs16/versions/2
+        instanceType: c1
+        runtime: custom
+        cpu: 4
+        instanceConcurrency: 10
+        memorySize: 8192
+        environmentVariables:
+          proxyUrl: ${stable-diffusion-original.output.url.custom_domain[0].domain}
+          PATH: >-
+            /opt/nodejs16/bin::/usr/local/bin/apache-maven/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ruby/bin:/opt/bin:/code:/code/bin
+          NODE_PATH: /opt/nodejs/node_modules
+        name: stable-diffusion-portal
+        asyncConfiguration: {}
+        codeUri: 'code'
+      triggers:
+        - name: sd-portal
+          description: ''
+          type: http
+          config:
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - HEAD
+              - OPTIONS
+            authType: anonymous
+            disableURLInternet: false
+      customDomains:
+        - domainName: auto
+          protocol: HTTP
+          routeConfigs:
+            - path: /*

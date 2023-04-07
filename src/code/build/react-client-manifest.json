@@ -1,0 +1,101 @@
+{
+  "file:///Users/hanxie/localproject/serverless/modern-site-render/sd-freetail/sd-ssr/src/index.client.js": {
+    "": {
+      "id": 87,
+      "chunks": [
+        179
+      ],
+      "name": ""
+    },
+    "*": {
+      "id": 87,
+      "chunks": [
+        179
+      ],
+      "name": "*"
+    }
+  },
+  "file:///Users/hanxie/localproject/serverless/modern-site-render/sd-freetail/sd-ssr/src/LocationContext.client.js": {
+    "": {
+      "id": 543,
+      "chunks": [
+        179
+      ],
+      "name": ""
+    },
+    "*": {
+      "id": 543,
+      "chunks": [
+        179
+      ],
+      "name": "*"
+    },
+    "LocationContext": {
+      "id": 543,
+      "chunks": [
+        179
+      ],
+      "name": "LocationContext"
+    },
+    "useLocation": {
+      "id": 543,
+      "chunks": [
+        179
+      ],
+      "name": "useLocation"
+    }
+  },
+  "file:///Users/hanxie/localproject/serverless/modern-site-render/sd-freetail/sd-ssr/src/Root.client.js": {
+    "": {
+      "id": 391,
+      "chunks": [
+        179
+      ],
+      "name": ""
+    },
+    "*": {
+      "id": 391,
+      "chunks": [
+        179
+      ],
+      "name": "*"
+    },
+    "default": {
+      "id": 391,
+      "chunks": [
+        179
+      ],
+      "name": "default"
+    }
+  },
+  "file:///Users/hanxie/localproject/serverless/modern-site-render/sd-freetail/sd-ssr/src/Cache.client.js": {
+    "": {
+      "id": 117,
+      "chunks": [
+        179
+      ],
+      "name": ""
+    },
+    "*": {
+      "id": 117,
+      "chunks": [
+        179
+      ],
+      "name": "*"
+    },
+    "useRefresh": {
+      "id": 117,
+      "chunks": [
+        179
+      ],
+      "name": "useRefresh"
+    },
+    "useServerResponse": {
+      "id": 117,
+      "chunks": [
+        179
+      ],
+      "name": "useServerResponse"
+    }
+  }
+}

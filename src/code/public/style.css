@@ -1,0 +1,215 @@
+/* -------------------------------- CSSRESET --------------------------------*/
+/* CSS Reset adapted from https://dev.to/hankchizljaw/a-modern-css-reset-6p3 */
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default padding */
+ul[class],
+ol[class] {
+  padding: 0;
+}
+
+/* Remove default margin */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+ul[class],
+ol[class],
+li,
+figure,
+figcaption,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+/* Set core body defaults */
+body {
+  min-height: 100vh;
+  scroll-behavior: smooth;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
+/* Remove list styles on ul, ol elements with a class attribute */
+ul[class],
+ol[class] {
+  list-style: none;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Natural flow and rhythm in articles by default */
+article > * + * {
+  margin-block-start: 1em;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove all animations and transitions for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* -------------------------------- /CSSRESET --------------------------------*/
+
+:root {
+  /* Colors */
+  --main-border-color: #ddd;
+  --primary-border: #037dba;
+  --gray-20: #404346;
+  --gray-60: #8a8d91;
+  --gray-70: #bcc0c4;
+  --gray-80: #c9ccd1;
+  --gray-90: #e4e6eb;
+  --gray-95: #f0f2f5;
+  --gray-100: #f5f7fa;
+  --primary-blue: #037dba;
+  --secondary-blue: #0396df;
+  --tertiary-blue: #c6efff;
+  --flash-blue: #4cf7ff;
+  --outline-blue: rgba(4, 164, 244, 0.6);
+  --navy-blue: #035e8c;
+  --red-25: #bd0d2a;
+  --secondary-text: #65676b;
+  --white: #fff;
+  --yellow: #fffae1;
+
+  --outline-box-shadow: 0 0 0 2px var(--outline-blue);
+  --outline-box-shadow-contrast: 0 0 0 2px var(--navy-blue);
+
+  /* Fonts */
+  --sans-serif: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Ubuntu, Helvetica, sans-serif;
+  --monospace: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console,
+    monospace;
+}
+
+.flex-container {
+  width: 1200px;
+  margin: 0 auto;
+  padding-top: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.product-item {
+  width: 390px;
+}
+
+.product-item .top {
+  width: 390px;
+  height: 390px;
+}
+.skeleton::after {
+  content: 'Loading...';
+}
+.skeleton {
+  height: 100%;
+  background-color: #eee;
+  background-image: linear-gradient(90deg, #eee, #f5f5f5, #eee);
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  display: block;
+  line-height: 1;
+  width: 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  color: transparent;
+}
+.skeleton:first-of-type {
+  margin: 0;
+}
+.skeleton--button {
+  border-radius: 100px;
+  padding: 6px 20px 8px;
+  width: auto;
+}
+.v-stack + .v-stack {
+  margin-block-start: 0.8em;
+}
+
+.offscreen {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  width: 1px;
+  position: absolute;
+}
+
+/* ---------------------------------------------------------------------------*/
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    top: -10px;
+    opacity: 0;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes flash {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
