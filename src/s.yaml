@@ -59,7 +59,6 @@ services:
     component: fc
     actions:
       pre-deploy:
-        - run: 'curl ${stable-diffusion-original.output.url.custom_domain[0].domain}'
         - run: npm i --force
           path: ./code
     props:
