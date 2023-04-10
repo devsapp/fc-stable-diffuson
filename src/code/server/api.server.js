@@ -119,11 +119,11 @@ app.use((req, res, next) => {
   if (path === '/' || path === '/react' || path === '/proxyUrl' || path === '/assets' || path === '/internal') {
     next();
   } else {
-    
+
     const url = proxyUrl + originalUrl;
     const method = req.method;
     const headers = req.headers;
- 
+
     const query = req.query;
     const body = req.body;
     delete headers.host;
