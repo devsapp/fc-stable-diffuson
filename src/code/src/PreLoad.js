@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function PreLoad() {
   const [words, setWords] = useState('');
-  const data = '本次体验所需镜像较大,函数计算需要进行冷启动，请耐心等待5-8分钟'.split('')
+  const data = 'Serverless 正在为您准备 AIGC 环境 AIGC 模型正在加载中 '.split('')
   let index = 0;
   let typeWords = ''
   function writing(index) {
