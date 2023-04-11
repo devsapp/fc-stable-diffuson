@@ -76,7 +76,7 @@ services:
         diskSize: 512
         caPort: 4000
         layers:
-          - acs:fc:cn-shanghai:official:layers/Nodejs16/versions/2
+          - acs:fc:${vars.region}:official:layers/Nodejs16/versions/2
         instanceType: c1
         runtime: custom
         cpu: 4
