@@ -26,7 +26,7 @@ services:
         customContainerConfig:
           args: ''
           accelerationType: Default
-          image: registry.${region}.aliyuncs.com/fc-stable-diffusion/stable-diffusion:v1
+          image: registry.${vars.region}.aliyuncs.com/fc-stable-diffusion/stable-diffusion:v1
           accelerationInfo:
             status: Preparing
           command: ''
