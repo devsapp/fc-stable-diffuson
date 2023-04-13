@@ -31,7 +31,7 @@ services:
             status: Preparing
           command: ''
           webServerMode: true
-        instanceConcurrency: 1
+        instanceConcurrency: 100
         memorySize: 32768
         environmentVariables: {}
         gpuMemorySize: 16384
