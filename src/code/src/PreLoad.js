@@ -26,6 +26,7 @@ export default function PreLoad() {
         {words}
       </div>
       <div className="loader" />
+      <div style={{ color: 'grey', fontSize: '12px', margin: '200px auto', textAlign: 'center' }}>注：频繁刷新可能会增加您的GPU消耗，喝杯咖啡耐心等待即可</div>
     </div>
   );
 }
