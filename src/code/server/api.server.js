@@ -107,8 +107,43 @@ app.use('/internal', (req, res) => {
 
 });
 app.use('/assets', (req, res) => {
-  const url = proxyUrl + req.originalUrl;
-  res.redirect(url);
+  // const url = proxyUrl + req.originalUrl;
+  // res.redirect(url);
+  const originUrl = req.originalUrl;
+  const url = proxyUrl + originUrl;
+  const method = req.method;
+  const headers = req.headers;
+
+  const query = req.query;
+  const body = req.body;
+  delete headers.host;
+  delete headers.origin;
+  superagent(method, url)
+    .set(headers)
+    // .query(query)
+    // .send(body)
+    .timeout(50000)
+    .end((err, response) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+       
+        if(response._body) {
+          res.set({
+            'Content-Type': 'application/javascript; charset=utf-8',
+          });
+          res.send(response._body);
+        } else if(response.text) {
+          res.set({
+            'Content-Type': `${response.type}; charset=${response.charset || 'utf-8'}`,
+          });
+          res.send(response.text);
+        } else {
+          res.send(response.body)
+        }
+        
+      }
+    });
 });
 app.use(express.static('build'));
 app.use(express.static('public'));
