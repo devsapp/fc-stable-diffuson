@@ -109,7 +109,10 @@ GPU本身对算力资源消耗较大，我们默认提供的是按量付费的�
 #### 5 模型及插件扩展
 目前版本不支持模型和插件的动态扩展，如您有需求，可以加入我们官方群中提出
 
-
+#### 6 如何构建并使用stable-diffusion-webui 镜像
++ 使用[stable-diffusion-webui-docker](https://github.com/AbdBarho/stable-diffusion-webui-docker) 镜像本地镜像构建
++ 将构建好的本地镜像托管到 阿里云[容器镜像服务](https://help.aliyun.com/document_detail/257112.html?spm=a2c4g.410107.0.0.5b4036b9BUO0T5)服务,
+注意选择镜像服务的地域要跟函数计算部署的地域保持一致
 
 </usedetail>
 
