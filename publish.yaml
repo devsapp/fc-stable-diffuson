@@ -1,11 +1,10 @@
-
 Type: Application
 Name: fc-stable-diffusion
 Provider:
   - 阿里云
-Version: 0.0.24
+Version: 0.0.25
 Description: 使用serverless devs将stable-diffusion部署到阿里云函数计算上
-HomePage: 项目首页地址
+HomePage: https://github.com/OhYee/fc-stable-diffuson
 Tags: #标签详情
   - 部署函数
 Category: Web框架
@@ -26,8 +25,32 @@ Parameters:
         - cn-hangzhou
         - cn-shanghai
         - cn-shenzhen
+    functionName:
+      title: 函数名
+      type: string
+      default: sd
+      description: 您可以根据需要多次创建该应用，通过函数名来区分出不同的镜像地址
     imageUrl:
       title: stable-diffusion 镜像地址
       type: string
       default: ''
-      description: 'stable-diffusion 的镜像地址，您可以参考或者使用社区贡献者提供的相关镜像如上海region镜像地址：registry-vpc.cn-shanghai.aliyuncs.com/fc-stable-diffusion/stable-diffusion:v1; 北京region镜像地址：registry-vpc.cn-beijing.aliyuncs.com/fc-stable-diffusion/stable-diffusion:v1 ; 深圳region镜像地址：registry-vpc.cn-shenzhen.aliyuncs.com/fc-stable-diffusion/stable-diffusion:v1 ; 杭州region镜像地址：registry-vpc.cn-hangzhou.aliyuncs.com/fc-stable-diffusion/stable-diffusion:v1'   
+      pattern: "^[a-zA-Z_][a-zA-Z0-9-_:/.]{0,127}$"
+      description: |+
+        stable-diffusion 的镜像地址，请注意使用镜像的地域跟您创建应用所在的地域保持一致。您可以参考或者使用社区贡献者提供的相关镜像
+        sd1.5模型
+          北京: registry.cn-beijing.aliyuncs.com/aliyun-fc/fc-stable-diffusion:sd1.5-v1
+            上海: registry.cn-shanghai.aliyuncs.com/aliyun-fc/fc-stable-diffusion:sd1.5-v1
+            深圳: registry.cn-shenzhen.aliyuncs.com/aliyun-fc/fc-stable-diffusion:sd1.5-v1
+            杭州: registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:sd1.5-v1
+        动漫风格模型
+          北京: registry.cn-beijing.aliyuncs.com/aliyun-fc/fc-stable-diffusion:anime-v1
+          上海: registry.cn-shanghai.aliyuncs.com/aliyun-fc/fc-stable-diffusion:anime-v1
+          深圳: registry.cn-shenzhen.aliyuncs.com/aliyun-fc/fc-stable-diffusion:anime-v1
+          杭州: registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:anime-v1
+        真人风格模型
+          北京: registry.cn-beijing.aliyuncs.com/aliyun-fc/fc-stable-diffusion:realman-v1
+          上海: registry.cn-shanghai.aliyuncs.com/aliyun-fc/fc-stable-diffusion:realman-v1
+          深圳: registry.cn-shenzhen.aliyuncs.com/aliyun-fc/fc-stable-diffusion:realman-v1
+          杭州: registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:realman-v1
+
+        【 注意：点击创建环境将开通 NAS，NAS 新用户请先领用免费赠送资源（https://free.aliyun.com/?product=9657388&crowd=personal&spm=5176.59209.J_3207526240.154.2b8676b96eKTFk&scm=20140722.M_9489751._.V_1）后再创建。资源包默认赠送9GiB性能型NAS(50GiB需要除以5.47倍抵扣系数)。

@@ -1,0 +1,9 @@
+# sd 基础模型
+FROM alpine:3.17 as models
+
+RUN apk add --no-cache aria2
+RUN aria2c -x 8 --dir "/" --out "sd-v1-5-inpainting.ckpt" "https://huggingface.co/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt"
+
+FROM registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev1
+
+COPY --from=models /sd-v1-5-inpainting.ckpt /stable-diffusion-webui/models/Stable-diffusion/sd-v1-5-inpainting.ckpt

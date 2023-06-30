@@ -1,0 +1,11 @@
+# 动漫画风
+FROM alpine:3.17 as models
+
+RUN apk add --no-cache aria2
+RUN aria2c -x 8 --dir "/" --out "mixProV4.Cqhm.safetensors" "https://civitai.com/api/download/models/34559?type=Model&format=SafeTensor&size=full&fp=fp16"
+
+FROM registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev1
+
+COPY --from=models /mixProV4.Cqhm.safetensors /stable-diffusion-webui/models/Stable-diffusion/mixProV4.Cqhm.safetensors
+
+

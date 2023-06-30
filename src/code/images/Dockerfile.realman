@@ -1,0 +1,18 @@
+# 真人画风
+FROM alpine:3.17 as models
+
+RUN apk add --no-cache aria2
+
+RUN aria2c -x 8 --dir "/" --out "chikmix_V2.safetensors" "https://civitai.com/api/download/models/59409?type=Model&format=SafeTensor&size=full&fp=fp32"
+RUN aria2c -x 8 --dir "/" --out "ChinaDollLikeness.safetensors" "https://civitai.com/api/download/models/66172?type=Model&format=SafeTensor"
+RUN aria2c -x 8 --dir "/" --out "KoreanDollLikeness.safetensors" "https://civitai.com/api/download/models/31284?type=Model&format=SafeTensor&size=full&fp=fp16"
+RUN aria2c -x 8 --dir "/" --out "JapaneseDollLikeness.safetensors" "https://civitai.com/api/download/models/34562?type=Model&format=SafeTensor&size=full&fp=fp16"
+RUN aria2c -x 8 --dir "/" --out "chilloutmix_NiPrunedFp16Fix.safetensors" https://huggingface.co/samle/sd-webui-models/resolve/main/chilloutmix_NiPrunedFp16Fix.safetensors
+
+FROM registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev1
+
+# COPY --from=models /chikmix_V2.safetensors /stable-diffusion-webui/models/Stable-diffusion/chikmix_V2.safetensors
+COPY --from=models /ChinaDollLikeness.safetensors /stable-diffusion-webui/models/Lora/ChinaDollLikeness.safetensors
+COPY --from=models /KoreanDollLikeness.safetensors /stable-diffusion-webui/models/Lora/KoreanDollLikeness.safetensors
+COPY --from=models /JapaneseDollLikeness.safetensors /stable-diffusion-webui/models/Lora/JapaneseDollLikeness.safetensors
+COPY --from=models /chilloutmix_NiPrunedFp16Fix.safetensors /stable-diffusion-webui/models/Stable-diffusion/chilloutmix_NiPrunedFp16Fix.safetensors
