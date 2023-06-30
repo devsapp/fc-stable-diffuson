@@ -53,19 +53,16 @@
 <remark>
 
 您还需要注意：   
-1. 为优化首次加载体验，减少白屏等待时间，本项目提供了一个专门展是预加载页面的代理函数stable-diffusion-portal，如果您在意相关的资费消耗，可以选择删除，直接sd-server函数
-2. 本次构建的stable-diffusion模型固化到镜像中，您无法修改和添加模型，包括生成的图片因为冷启动无法持久化保存，请在生成后自行保存
-3.使用GPU渲染会有资费消耗，使用的时候请注意自己的消费额度。
+1. 项目依赖阿里云函数计算，这会产生资费，请关注您的资源包使用情况和费用情况 
+2. 项目里面的插件安装推荐下载到本地再通过kodbox管理后台上传，因为网络关系，在线安装有失败的情况
 
 </remark>
 
 <disclaimers>
 
 免责声明：   
-1.应用中心仅为您提供应用的逻辑关系，不为您托管任何资源。如果您部署的应用中，存在一定的资源收费现象，请参考对应产品的收费标准；如果您应用所使用的某些产品或者服务因为产品规划等原因发生了不兼容变更，建议您直接咨询对应的产品或者服务；
-2.应用中心为您提供的默认流水线功能是免费的，如果您需要手动切换到自定义流水线可能涉及到资源使用费用，具体的收费标准需要参考函数计算的计费文档；
-3.应用中心部署的部分应用会为您分配“devsapp.cn”的测试域名，这个测试域名并非阿里云官方域名，是 CNCF Sandbox 项目 Serverless Devs 所提供的测试域名，我们不保证该域名的使用时效性，推荐您只在测试的时候使用，或者绑定自己的自定义域名进行使用；
-4.应用部署过程中，如果提示“当前应用模板由社区贡献，非阿里云官方提供，推荐您在使用当前应用模板前仔细阅读应用详情，以确保应用的安全，稳定等”则表示该应用并非阿里云官方所提供的应用，我们仅作为收录和展示，如果您继续部署该应用，推荐您联系应用的作者，并与作者协商应用使用的相关协议等；
+该项目的构建镜像及应用模板完全开源，由社区开发者贡献，阿里云仅提供了算力支持；
+项目使用的sd-webui镜像内容同步自开源社区，如遇软件使用问题可以去社区查看问题答案
 
 </disclaimers>
 
@@ -95,24 +92,54 @@
 
 <usedetail id="flushContent">
 
-### 常见问题
-#### 1. 冷启动时间较长如何优化？
-因为本身sd的模型较大，打包镜像后依然达到10G，函数计算拉起镜像冷启动时间会比较长，大概2-5分钟，我们提供了预加载界面，避免您长时间的白屏等待。
-####  2.镜像加速
-为了提升冷启动时间，我们提供了镜像加速服务，请关注控制台上的镜像加速状态，只有在ready才真正可用。
-#### 3. 刚进去输入提示词构建偶尔会失败
-这个可能是因为模型本身还未加载，请注意查看左上角选择框里面包含模型内容，之后再操作。出图的时候会有一定的等待时间，这个是正常现象，耐心等待即可
+### 内置模型
 
-#### 4 资费消耗
-GPU本身对算力资源消耗较大，我们默认提供的是按量付费的模式，当您不用的时候会自动释放资源，这样可以帮您减少资费消耗
+#### 基础模型
 
-#### 5 模型及插件扩展
-目前版本不支持模型和插件的动态扩展，如您有需求，可以加入我们官方群中提出
+共包含三种类型的基础模型预构建镜像
 
-#### 6 如何构建并使用stable-diffusion-webui 镜像
-+ 使用[stable-diffusion-webui-docker](https://github.com/AbdBarho/stable-diffusion-webui-docker) 镜像本地镜像构建
-+ 将构建好的本地镜像托管到 阿里云[容器镜像服务](https://help.aliyun.com/document_detail/257112.html?spm=a2c4g.410107.0.0.5b4036b9BUO0T5)服务,
-注意选择镜像服务的地域要跟函数计算部署的地域保持一致
+##### sd1.5
+
+内置 `sd-v1-5-inpainting.ckpt` 镜像，绘制能力较强，可以根据描述词得到不同形式的图像
+
+##### 动漫风格
+
+内置 `mixProV4.Cqhm.safetensors` 镜像，支持绘制出动漫风格的图像  
+（建议配合 VAE 模型 `cIF8Anime2.43ol.ckpt` 提升色彩表现能力）
+
+[模型来源地址](https://civitai.com/models/7241/mix-pro-v4)
+
+
+##### 真人风格
+
+内置 `chilloutmix_NiPrunedFp16Fix.safetensors` 镜像，支持绘制出真人风格的图像
+
+[模型来源地址](https://huggingface.co/samle/sd-webui-models/)
+
+搭配了对应 Lora 模型
+
+- `ChinaDollLikeness.safetensors`
+- `KoreanDollLikeness.safetensors`
+- `JapaneseDollLikeness.safetensors`
+
+#### Lora & VAE 模型
+
+|名称|类型|地址|介绍|
+|:---:|:---:|:---:|:---:|
+|`milkingMachine_v11.safetensors`|Lora|[模型来源](https://civitai.com/models/17516/abyssorangemix3-6-milk-cow-girl-2-milkingmachine-lora-by-racycats)|动漫风渲染|
+|`blingdbox_v1_mix.safetensors`|Lora|[模型来源](https://civitai.com/models/25995/blindbox?modelVersionId=32988)|盲盒画风|
+|`GachaSpliash4.safetensors`|Lora|[模型来源](https://civitai.com/models/13090/gacha-splash-lora)|带背景立绘风格|
+|`Colorwater_v4.safetensors`|Lora|[模型来源](https://civitai.com/models/16055/colorwater)|水墨风渲染|
+|`cIF8Anime2.43ol.ckpt`|VAE|[模型来源](https://civitai.com/models/7241/mix-pro-v4)|提升色彩表现|
+
+
+
+### 内置插件
+
+- [stable-diffusion-webui-chinese](https://github.com/VinsonLaro/stable-diffusion-webui-chinese) WebUI 汉化
+- [sd-prompt-translator](https://github.com/studyzy/sd-prompt-translator) 中文提示词自动翻译
+- [sdweb-easy-prompt-selector](https://github.com/blue-pen5805/sdweb-easy-prompt-selector) 提示词选择，[@路过银河​](https://zhuanlan.zhihu.com/p/630518048) 提供汉化
+
 
 </usedetail>
 

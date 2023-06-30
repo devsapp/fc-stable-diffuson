@@ -1,0 +1,10 @@
+{
+    "outdir_samples": "",
+    "outdir_txt2img_samples": "/mnt/auto/sd/outputs/txt2img",
+    "outdir_img2img_samples": "/mnt/auto/sd/outputs/img2img",
+    "outdir_extras_samples": "/mnt/auto/sd/outputs/extras",
+    "outdir_txt2img_grids": "/mnt/auto/sd/outputs/txt2img-grids",
+    "outdir_img2img_grids": "/mnt/auto/sd/outputs/img2img-grids",
+    "outdir_save": "/mnt/auto/sd/outputs/saved",
+    "font": "DejaVuSans.ttf"
+}
