@@ -98,9 +98,11 @@ FROM base as extensions
 
 COPY ./init /init
 RUN mkdir -p /sd-prompt-translator && python /init/sd-prompt-translator.py /sd-prompt-translator
+RUN mkdir -p /bert-base-uncased-cache && python /init/bert-base-uncased.py /bert-base-uncased-cache
+RUN mkdir -p /clip-vit-large-patch14 && python /init/clip-vit-large-patch14.py /clip-vit-large-patch14
 
 ############################# 
-#        Lora & VAE         #
+#           models          #
 #############################
 FROM alpine:3.17 as models
 
@@ -112,47 +114,28 @@ RUN aria2c -x 8 --dir "/" --out "parsing_parsenet.pth" "https://github.com/sczho
 RUN aria2c -x 8 --dir "/" --out "model_base_caption_capfilt_large.pth" "https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_caption_capfilt_large.pth" 
 RUN aria2c -x 8 --dir "/" --out "model-resnet_custom_v3.pt" "https://github.com/AUTOMATIC1111/TorchDeepDanbooru/releases/download/v1/model-resnet_custom_v3.pt" 
 
-
-RUN aria2c -x 8 --dir "/" --out "cIF8Anime2.43ol.ckpt" "https://civitai.com/api/download/models/34559?type=VAE&format=Other"
-RUN aria2c -x 8 --dir "/" --out "vae-ft-mse-840000-ema-pruned.safetensors" "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors"
-
-RUN aria2c -x 8 --dir "/" --out "moxin.safetensors" "https://civitai.com/api/download/models/14856?type=Model&format=SafeTensor&size=full&fp=fp16"
-RUN aria2c -x 8 --dir "/" --out "milkingMachine_v11.safetensors" "https://civitai.com/api/download/models/20705?type=Model&format=SafeTensor&size=full&fp=fp16" 
-RUN aria2c -x 8 --dir "/" --out "blingdbox_v1_mix.safetensors" "https://civitai.com/api/download/models/32988?type=Model&format=SafeTensor&size=full&fp=fp16" 
-RUN aria2c -x 8 --dir "/" --out "GachaSpliash4.safetensors" "https://civitai.com/api/download/models/38884?type=Model&format=SafeTensor" 
-RUN aria2c -x 8 --dir "/" --out "Colorwater_v4.safetensors" "https://civitai.com/api/download/models/21173?type=Model&format=SafeTensor&size=full&fp=fp16" 
-
-
 ############################# 
 #           dist            #
 #############################
 
 FROM base as dist
 
-RUN mkdir -p /stable-diffusion-webui/models/Stable-diffusion
+ENV SD_BUILTIN=/built-in
 
-# copy sd-resource
-COPY ./sd-resource ${ROOT}/sd-resource
-RUN cp -r ${ROOT}/sd-resource/* ${ROOT} && rm -rf ${ROOT}/sd-resource
+RUN mkdir -p "${ROOT}/models/Stable-diffusion"
 
-# copy extensions pre-download models
-COPY --from=extensions /sd-prompt-translator  ${ROOT}/extensions/sd-prompt-translator/scripts/models
+# copy built-in extensions、models
+COPY ./sd-resource ${SD_BUILTIN}
 
-# copy Lora and VAE
-COPY --from=models /codeformer-v0.1.0.pth /stable-diffusion-webui/models/Codeformer/codeformer-v0.1.0.pth
-COPY --from=models /detection_Resnet50_Final.pth /stable-diffusion-webui/repositories/CodeFormer/weights/facelib/detection_Resnet50_Final.pth
-COPY --from=models /parsing_parsenet.pth /stable-diffusion-webui/repositories/CodeFormer/weights/facelib/parsing_parsenet.pth
-COPY --from=models /model_base_caption_capfilt_large.pth /stable-diffusion-webui/models/BLIP/model_base_caption_capfilt_large.pth
-COPY --from=models /model-resnet_custom_v3.pt /stable-diffusion-webui/models/torch_deepdanbooru/model-resnet_custom_v3.pt
+COPY --from=extensions /sd-prompt-translator  ${SD_BUILTIN}/extensions/sd-prompt-translator/scripts/models
+COPY --from=extensions /bert-base-uncased-cache/*  ${SD_BUILTIN}/cache/huggingface/hub/
+# COPY --from=extensions /clip-vit-large-patch14/*  ${SD_BUILTIN}/cache/huggingface/hub/
 
-COPY --from=models /cIF8Anime2.43ol.ckpt /stable-diffusion-webui/models/VAE/cIF8Anime2.43ol.ckpt
-# COPY --from=models /vae-ft-mse-840000-ema-pruned.safetensors /stable-diffusion-webui/models/VAE/vae-ft-mse-840000-ema-pruned.safetensors
-
-# COPY --from=models /moxin.safetensors /stable-diffusion-webui/models/Lora/moxin.safetensors
-COPY --from=models /milkingMachine_v11.safetensors /stable-diffusion-webui/models/Lora/milkingMachine_v11.safetensors
-COPY --from=models /blingdbox_v1_mix.safetensors /stable-diffusion-webui/models/Lora/blingdbox_v1_mix.safetensors
-COPY --from=models /GachaSpliash4.safetensors /stable-diffusion-webui/models/Lora/GachaSpliash4.safetensors
-COPY --from=models /Colorwater_v4.safetensors /stable-diffusion-webui/models/Lora/Colorwater_v4.safetensors 
+COPY --from=models /codeformer-v0.1.0.pth ${SD_BUILTIN}/models/Codeformer/codeformer-v0.1.0.pth
+COPY --from=models /detection_Resnet50_Final.pth ${SD_BUILTIN}/repositories/CodeFormer/weights/facelib/detection_Resnet50_Final.pth
+COPY --from=models /parsing_parsenet.pth ${SD_BUILTIN}/repositories/CodeFormer/weights/facelib/parsing_parsenet.pth
+# COPY --from=models /model_base_caption_capfilt_large.pth ${SD_BUILTIN}/models/BLIP/model_base_caption_capfilt_large.pth
+COPY --from=models /model-resnet_custom_v3.pt ${SD_BUILTIN}/models/torch_deepdanbooru/model-resnet_custom_v3.pt
 
 COPY ./config.json /docker/config.json
 COPY ./entrypoint.sh /docker/entrypoint.sh
@@ -168,7 +151,5 @@ RUN \
 WORKDIR ${ROOT}
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV NVIDIA_VISIBLE_DEVICES=all
-ENV CLI_ARGS="--xformers --enable-insecure-extension-access --skip-version-check --no-download-sd-model"
 EXPOSE 7860
 ENTRYPOINT ["/docker/entrypoint.sh"]
-CMD python -u webui.py --listen --port 7860 ${CLI_ARGS}

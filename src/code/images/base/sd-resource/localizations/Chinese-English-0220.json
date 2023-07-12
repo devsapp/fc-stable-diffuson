@@ -195,7 +195,7 @@
     "Send to img2img": ">> 图生图/Send to img2img",
     "Send to inpaint": ">> 局部绘制/Send to inpaint",
     "Send to extras": ">> 附加功能/Send to extras",
-    "Interrogate\nCLIP": "CLIP\n反向推导提示词/Interrogate\nCLIP",
+    "Interrogate\nCLIP": "CLIP\n反向推导提示词\n(需要几分钟时间加载模型，请耐心等待)/Interrogate\nCLIP",
     "Interrogate\nDeepBooru": "DeepBooru\n反向推导提示词/Interrogate\nDeepBooru",
     "Sketch": "涂鸦绘制/Sketch",
     "Inpaint": "局部绘制/Inpaint",

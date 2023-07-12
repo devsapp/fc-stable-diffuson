@@ -1,0 +1,3 @@
+FROM stable-diffusion:sd1.5-v1
+
+COPY ./entrypoint.sh /docker/entrypoint.sh
