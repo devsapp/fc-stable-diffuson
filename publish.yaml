@@ -16,6 +16,9 @@ Parameters:
     - serviceName
     - functionName
     - type
+    - nasEnabled
+    - webuiEnabled
+    - apiEnabled
   properties:
     region:
       title: 地域
@@ -31,11 +34,13 @@ Parameters:
       title: 服务名
       type: string
       default: fc-stable-diffusion
+      pattern: "^[a-zA-Z_][a-zA-Z0-9-_:/.]{0,127}$"
       description: 您可以根据需要设置不同的服务名，同一个服务会共享部分第三方云产品资源
     functionName:
       title: 函数名
       type: string
       default: sd
+      pattern: "^[a-zA-Z_][a-zA-Z0-9-_:/.]{0,127}$"
       description: 您可以根据需要多次创建该应用，通过函数名来区分出不同的镜像地址
     type:
       title: 绘图类型
@@ -54,7 +59,7 @@ Parameters:
 
     nasEnabled:
       title: 启用 NAS
-      type:
+      type: boolean
       default: false
       description: |+
         启用 NAS 将允许您上传自定义的模型、插件，提升 Stable Diffusion 自由度及可定制性。
@@ -70,6 +75,7 @@ Parameters:
     webuiAuth:
       title: WebUI 鉴权
       type: string
+      pattern: "^([^:,]+:[^:,]+(,[^:,]+:[^:,]+)*)*$"
       description: |+
         WebUI 鉴权，访问页面时需要进行鉴权操作，只有通过鉴权后才能进入界面，避免链接泄漏后导致额外费用。格式：“用户名:密码”，多个用户使用英文逗号分隔。留空不开启鉴权
 
@@ -82,6 +88,7 @@ Parameters:
     apiAuth:
       title: API 鉴权
       type: string
+      pattern: "^([^:,]+:[^:,]+(,[^:,]+:[^:,]+)*)*$"
       description: |+
         API 鉴权，只有通过鉴权才能调用接口，避免链接泄漏后导致额外费用。格式：“用户名:密码”，多个用户使用英文逗号分隔。留空不开启鉴权
    

@@ -90,6 +90,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 RUN --mount=type=cache,target=/root/.cache/pip  pip install -U opencv-python-headless
 
+RUN python -m pip install --upgrade fastapi==0.90.1
+
 ############################# 
 #     extension models     #
 #############################
@@ -138,7 +140,7 @@ COPY --from=models /parsing_parsenet.pth ${SD_BUILTIN}/repositories/CodeFormer/w
 COPY --from=models /model-resnet_custom_v3.pt ${SD_BUILTIN}/models/torch_deepdanbooru/model-resnet_custom_v3.pt
 
 COPY ./config.json /docker/config.json
-COPY ./entrypoint.sh /docker/entrypoint.sh
+# COPY ./entrypoint.sh /docker/entrypoint.sh
 COPY ./info.py /docker/info.py
 
 RUN \

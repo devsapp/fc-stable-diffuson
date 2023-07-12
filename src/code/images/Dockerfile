@@ -42,7 +42,7 @@ RUN sed -i ${SD_BUILTIN}/ui-config.json -e 's@"txt2img/Negative prompt/value": "
 FROM base as sd1.5
 
 COPY --from=models /sd-v1-5-inpainting.ckpt ${SD_BUILTIN}/models/Stable-diffusion/sd-v1-5-inpainting.ckpt
-
+COPY ./entrypoint.sh /docker/entrypoint.sh
 
 
 FROM base as anime
@@ -52,7 +52,7 @@ COPY --from=models /mixProV4.Cqhm.safetensors ${SD_BUILTIN}/models/Stable-diffus
 RUN sed -i ${SD_BUILTIN}/config.json -e 's/sd-v1-5-inpainting.ckpt \[c6bbc15e32\]/mixProV4.Cqhm.safetensors \[61e23e57ea\]/'
 RUN sed -i ${SD_BUILTIN}/config.json -e 's/c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19/61e23e57ea13765152435b42d55e7062de188ca3234edb82d751cf52f7667d4f/'
 RUN sed -i ${SD_BUILTIN}/config.json -e 's/Automatic/cIF8Anime2.43ol.ckpt/'
-
+COPY ./entrypoint.sh /docker/entrypoint.sh
 
 FROM base as realman
 
@@ -64,3 +64,4 @@ COPY --from=models /chilloutmix_NiPrunedFp16Fix.safetensors ${SD_BUILTIN}/models
 
 RUN sed -i ${SD_BUILTIN}/config.json -e 's@sd-v1-5-inpainting.ckpt \[c6bbc15e32\]@chilloutmix_NiPrunedFp16Fix.safetensors \[59ffe2243a\]@'
 RUN sed -i ${SD_BUILTIN}/config.json -e 's@c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19@59ffe2243a25c9fe137d590eb3c5c3d3273f1b4c86252da11bbdc9568773da0c@'
+COPY ./entrypoint.sh /docker/entrypoint.sh

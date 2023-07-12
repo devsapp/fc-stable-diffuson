@@ -56,34 +56,36 @@ else
     echo "no ui-config.json, copy it"
     cp "${SD_BUILTIN}/ui-config.json" "${NAS_DIR}/ui-config.json"
   fi
-
-  declare -A MOUNTS
-
-  MOUNTS["/root/.cache"]="${NAS_DIR}/cache"
-  MOUNTS["${ROOT}/models"]="${NAS_DIR}/models"
-  MOUNTS["${ROOT}/localizations"]="${NAS_DIR}/localizations"
-  MOUNTS["${ROOT}/configs"]="${NAS_DIR}/configs"
-  MOUNTS["${ROOT}/extensions-builtin"]="${NAS_DIR}/extensions-builtin"
-  MOUNTS["${ROOT}/embeddings"]="${NAS_DIR}/embeddings"
-  MOUNTS["${ROOT}/config.json"]="${NAS_DIR}/config.json"
-  MOUNTS["${ROOT}/ui-config.json"]="${NAS_DIR}/ui-config.json"
-  MOUNTS["${ROOT}/extensions"]="${NAS_DIR}/extensions"
-  MOUNTS["${ROOT}/outputs"]="${NAS_DIR}/outputs"
-  # MOUNTS["${ROOT}/javascript"]="${NAS_DIR}/javascript"
-  # MOUNTS["${ROOT}/html"]="${NAS_DIR}/html"
-  MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="${NAS_DIR}/repositories/CodeFormer/weights/facelib"
-
-
-  for to_path in "${!MOUNTS[@]}"; do
-    mount_file "${MOUNTS[${to_path}]}" "${to_path}"
-  done
-
-  if [ -f "/mnt/auto/sd/startup.sh" ]; then
-    pushd ${ROOT}
-    . /mnt/auto/sd/startup.sh
-    popd
-  fi
 fi
+
+
+declare -A MOUNTS
+
+MOUNTS["/root/.cache"]="${NAS_DIR}/cache"
+MOUNTS["${ROOT}/models"]="${NAS_DIR}/models"
+MOUNTS["${ROOT}/localizations"]="${NAS_DIR}/localizations"
+MOUNTS["${ROOT}/configs"]="${NAS_DIR}/configs"
+MOUNTS["${ROOT}/extensions-builtin"]="${NAS_DIR}/extensions-builtin"
+MOUNTS["${ROOT}/embeddings"]="${NAS_DIR}/embeddings"
+MOUNTS["${ROOT}/config.json"]="${NAS_DIR}/config.json"
+MOUNTS["${ROOT}/ui-config.json"]="${NAS_DIR}/ui-config.json"
+MOUNTS["${ROOT}/extensions"]="${NAS_DIR}/extensions"
+MOUNTS["${ROOT}/outputs"]="${NAS_DIR}/outputs"
+# MOUNTS["${ROOT}/javascript"]="${NAS_DIR}/javascript"
+# MOUNTS["${ROOT}/html"]="${NAS_DIR}/html"
+MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="${NAS_DIR}/repositories/CodeFormer/weights/facelib"
+
+
+for to_path in "${!MOUNTS[@]}"; do
+  mount_file "${MOUNTS[${to_path}]}" "${to_path}"
+done
+
+if [ -f "/mnt/auto/sd/startup.sh" ]; then
+  pushd ${ROOT}
+  . /mnt/auto/sd/startup.sh
+  popd
+fi
+
 
 CLI_ARGS="${CLI_ARGS:---xformers --enable-insecure-extension-access --skip-version-check --no-download-sd-model}"
 EXTRA_ARGS="${EXTRA_ARGS:-}"
