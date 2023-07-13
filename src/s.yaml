@@ -1,18 +1,25 @@
-edition: 1.0.0
+edition: 1.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
 name: fc-stable-diffusion
 access: default
 vars:
   region: "{{ region }}" 
   serviceName: "{{ serviceName }}"
   functionName: "{{ functionName }}" 
-  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v1{{ else if type === '真人风格'}}realman-v1{{ else }}sd1.5-v1{{/if}}" 
+  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v2{{ else if type === '真人风格'}}realman-v2{{ else }}sd1.5-v{{/if}}" 
+  filemgrToken: "{{ filemgrToken || '' }}"
+  extraArgs: "{{ extraArgs || '' }}{{ if webuiEnabled === false }} --nowebui{{/if}}{{ if webuiAuth !== '' && webuiAuth !== undefined }} --gradio-auth {{webuiAuth}}{{/if}}{{ if apiEnabled }} --api{{/if}}{{ if apiAuth !== '' && apiAuth !== undefined }} --api-auth {{apiAuth}}{{/if}}"
   service:
     name: ${vars.serviceName}
-    description: 'stable-diffusion部署到函数计算'
+    description: 'stable-diffusion 部署到函数计算'
     internetAccess: true
+    {{ if nasEnabled === true }}nasConfig: auto{{/if}}
+
 services:
   stable-diffusion:
     component: fc
+    actions: 
+      post-deploy: 
+        - component: fc ondemand put --qualifier LATEST --max 1
     props:
       region: ${vars.region}
       service: ${vars.service}
@@ -35,9 +42,10 @@ services:
           webServerMode: true
         instanceConcurrency: 100
         memorySize: 32768
-        environmentVariables: {}
         gpuMemorySize: 16384
         asyncConfiguration: {}
+        environmentVariables:
+          EXTRA_ARGS: ${vars.extraArgs}
       triggers:
         - name: defaultTrigger
           description: ''
@@ -51,6 +59,49 @@ services:
               - DELETE
             authType: anonymous
             disableURLInternet: false
+      customDomains:
+        - domainName: auto
+          protocol: HTTP
+          routeConfigs:
+            - path: /*
+  filemgr:
+    component: fc 
+    actions: 
+      post-deploy: 
+        - component: fc ondemand put --qualifier LATEST --max 1
+    props:
+      region: ${vars.region}
+      service: ${vars.service}
+      function:
+        name: "admin"
+        description: 'FC 文件管理器'
+        codeUri: './code/filemgr'
+        runtime: custom
+        timeout: 7200
+        memorySize: 3072
+        cpu: 2.0
+        diskSize: 512
+        instanceConcurrency: 16
+        caPort: 9000
+        customRuntimeConfig:
+          command:
+            - ./server
+        environmentVariables:
+          TOKEN: ${vars.filemgrToken}
+        layers:
+          - "acs:fc:${vars.region}:official:layers/ServerlessDevs/versions/1"
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - HEAD
+              - OPTIONS
       customDomains:
         - domainName: auto
           protocol: HTTP

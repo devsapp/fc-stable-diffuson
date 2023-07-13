@@ -13,27 +13,27 @@ help: ## 帮助文件
 	
 NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
-BASE_TAG=basev1
+BASE_TAG=basev2
 
-SD15_VERSION=v1
-ANIME_VERSION=v1
-REALMAN_VERSION=v1
+SD15_VERSION=v2
+ANIME_VERSION=v2
+REALMAN_VERSION=v2
 
 
 push: push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
 
 
 build-base: ## 构建基础镜像
-	DOCKER_BUILDKIT=1 docker build -f code/images/base/Dockerfile.base -t registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} code/images/base
+	DOCKER_BUILDKIT=1 docker build -f code/images/base/Dockerfile -t registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} code/images/base
 
 build-sd1.5: ## 构建 sd 1.5
-	docker build -f code/images/Dockerfile.sd1.5 -t stable-diffusion:sd1.5-${SD15_VERSION} code/images/
+	docker build -f code/images/Dockerfile --target sd1.5 -t stable-diffusion:sd1.5-${SD15_VERSION} code/images/
 
 build-anime: ## 构建动漫风格
-	docker build -f code/images/Dockerfile.anime -t stable-diffusion:anime-${ANIME_VERSION} code/images/
+	docker build -f code/images/Dockerfile --target anime -t stable-diffusion:anime-${ANIME_VERSION} code/images/
 	
 build-realman: ## 构建真人风格
-	docker build -f code/images/Dockerfile.realman -t stable-diffusion:realman-${REALMAN_VERSION} code/images/
+	docker build -f code/images/Dockerfile --target realman -t stable-diffusion:realman-${REALMAN_VERSION} code/images/
 
 build: build-sd1.5 build-anime build-realman # 构建全部镜像
 
@@ -83,17 +83,20 @@ push-base-ap: build ## push 镜像到新加坡
 	docker push registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG}
 
 sync-from-ap: ## 同步新加坡镜像到其他 region
-	for region in "cn-hangzhou" "cn-beijing" "cn-shanghai" "cn-shenzhen"; do \
-		docker pull registry.ap-southeast-1.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev1 && \
-		docker tag  registry.ap-southeast-1.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev1 registry.${region}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev1 && \
-		docker push registry.${region}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev1 && \
-		\
-		for tag in "sd1.5-test" "anime-test" "realman-test"; do \
-			docker pull registry.ap-southeast-1.aliyuncs.com/aliyun-fc/fc-stable-diffusion:${tag} && \
-			docker tag registry.ap-southeast-1.aliyuncs.com/aliyun-fc/fc-stable-diffusion:${tag} registry.${region}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:${tag} && \
-			docker push registry.${region}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:${tag}; \
+	docker pull registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
+	docker tag  registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
+	docker push registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}"; do \
+		for region in "cn-hangzhou" "cn-beijing" "cn-shanghai" "cn-shenzhen"; do \
+			docker pull registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && \
+			docker tag registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} registry.$${region}.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && \
+			docker push registry.$${region}.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && continue; break; \
 		done; \
 	done
 	
 
 push: push-beijing push-shanghai push-hangzhou push-shenzhen
+
+all-ap: build-base build push-base-ap push-ap
+
+all: all-ap push-base push
