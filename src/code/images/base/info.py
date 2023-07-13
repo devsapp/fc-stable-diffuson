@@ -7,7 +7,7 @@ file.write_text(
   .replace('    return demo', """
     with demo:
         gr.Markdown(
-          'Created by [AUTOMATIC1111 / stable-diffusion-webui-docker](https://github.com/AbdBarho/stable-diffusion-webui-docker/)<br/>[内嵌模型介绍](https://github.com/OhYee/fc-stable-diffusion-ext)'
+          'Created by [AUTOMATIC1111 / stable-diffusion-webui-docker](https://github.com/AbdBarho/stable-diffusion-webui-docker/)'
         )
     return demo
 """, 1)
