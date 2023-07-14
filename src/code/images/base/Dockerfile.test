@@ -1,3 +1,0 @@
-FROM stable-diffusion:anime-v2
-
-COPY ./entrypoint.sh /docker/entrypoint.sh

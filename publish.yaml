@@ -16,8 +16,6 @@ Parameters:
     - serviceName
     - functionName
     - type
-    - webuiEnabled
-    - apiEnabled
   properties:
     region:
       title: 地域
@@ -33,13 +31,11 @@ Parameters:
       title: 服务名
       type: string
       default: fc-stable-diffusion
-      pattern: "^[a-zA-Z_][a-zA-Z0-9-_:/.]{0,127}$"
       description: 您可以根据需要设置不同的服务名，同一个服务会共享部分第三方云产品资源
     functionName:
       title: 函数名
       type: string
       default: sd
-      pattern: "^[a-zA-Z_][a-zA-Z0-9-_:/.]{0,127}$"
       description: 您可以根据需要多次创建该应用，通过函数名来区分出不同的镜像地址
     type:
       title: 绘图类型
@@ -55,35 +51,3 @@ Parameters:
         - SD1.5
         - 动漫风格
         - 真人风格
-
-    webuiEnabled:
-      title: 启用 WebUI 模式
-      type: boolean
-      default: true
-      description: |+
-        将开启 webui 页面，您可以通过网页生成图片
-    webuiAuth:
-      title: WebUI 鉴权
-      type: string
-      pattern: "^([^:,]+:[^:,]+(,[^:,]+:[^:,]+)*)*$"
-      description: |+
-        WebUI 鉴权，访问页面时需要进行鉴权操作，只有通过鉴权后才能进入界面，避免链接泄漏后导致额外费用。格式：“用户名:密码”，多个用户使用英文逗号分隔。留空不开启鉴权
-
-    apiEnabled:
-      title: 启用 API 模式
-      type: boolean
-      default: true
-      description: |+
-        将开启 api 模式，可在 /docs 目录查看所有接口文档，并通过接口生成图片。
-    apiAuth:
-      title: API 鉴权
-      type: string
-      pattern: "^([^:,]+:[^:,]+(,[^:,]+:[^:,]+)*)*$"
-      description: |+
-        API 鉴权，只有通过鉴权才能调用接口，避免链接泄漏后导致额外费用。格式：“用户名:密码”，多个用户使用英文逗号分隔。留空不开启鉴权
-   
-    extraArgs:
-      title: Stable Diffusion 参数
-      type: string
-      description: |+
-        您可以根据需要添加额外的 Stable Diffusion 参数。全部参数见 https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Command-Line-Arguments-and-Settings

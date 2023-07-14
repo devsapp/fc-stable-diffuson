@@ -13,18 +13,18 @@ help: ## 帮助文件
 	
 NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
-BASE_TAG=basev3
+BASE_TAG=basev5
 
-SD15_VERSION=v3
-ANIME_VERSION=v3
-REALMAN_VERSION=v3
+SD15_VERSION=v7
+ANIME_VERSION=v7
+REALMAN_VERSION=v7
 
 
 push: push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
 
 
 build-base: ## 构建基础镜像
-	DOCKER_BUILDKIT=1 docker build -f code/images/base/Dockerfile -t registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} code/images/base
+	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target base -t registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} code/images
 
 build-sd1.5: ## 构建 sd 1.5
 	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target sd1.5 -t stable-diffusion:sd1.5-${SD15_VERSION} code/images/
@@ -43,28 +43,28 @@ build: build-sd1.5 build-anime build-realman # 构建全部镜像
 push-base: ## 推送基础镜像
 	docker push registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG}
 
-push-beijing: build ## push 镜像到北京
+push-beijing:  ## push 镜像到北京
 	IMAGE=registry.cn-beijing.aliyuncs.com/${NAMESPACE}/${REPO} && \
 	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
-push-shanghai: build ## push 镜像到上海
+push-shanghai:  ## push 镜像到上海
 	IMAGE=registry.cn-shanghai.aliyuncs.com/${NAMESPACE}/${REPO} && \
 	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
-push-shenzhen: build ## push 镜像到深圳
+push-shenzhen:  ## push 镜像到深圳
 	IMAGE=registry.cn-shenzhen.aliyuncs.com/${NAMESPACE}/${REPO} && \
 	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
-push-hangzhou: build ## push 镜像到杭州
+push-hangzhou:  ## push 镜像到杭州
 	IMAGE=registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO} && \
 	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \

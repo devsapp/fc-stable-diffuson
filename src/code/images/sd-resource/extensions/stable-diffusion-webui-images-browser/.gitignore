@@ -1,0 +1,6 @@
+.DS_Store
+path_recorder.txt
+__pycache__
+*.json
+*.sqlite3
+*.log

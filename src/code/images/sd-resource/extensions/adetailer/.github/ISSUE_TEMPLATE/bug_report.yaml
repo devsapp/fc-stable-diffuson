@@ -1,0 +1,53 @@
+name: Bug report
+description: Create a report
+title: "[Bug]: "
+labels:
+  - bug
+
+body:
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: |
+        Any language accepted
+        아무 언어 사용가능
+        すべての言語に対応
+        接受所有语言
+        Se aceptan todos los idiomas
+        Alle Sprachen werden akzeptiert
+        Toutes les langues sont acceptées
+        Принимаются все языки
+
+  - type: textarea
+    attributes:
+      label: Screenshots
+      description: Screenshots related to the issue.
+
+  - type: textarea
+    attributes:
+      label: Console logs, from start to end.
+      description: |
+        The full console log of your terminal.
+      placeholder: |
+        Python ...
+        Version: ...
+        Commit hash: ...
+        Installing requirements
+        ...
+
+        Launching Web UI with arguments: ...
+        [-] ADetailer initialized. version: ...
+        ...
+        ...
+
+        Traceback (most recent call last):
+        ...
+        ...
+      render: Shell
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: List of installed extensions

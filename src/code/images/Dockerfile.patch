@@ -1,0 +1,7 @@
+FROM stable-diffusion:realman-v6
+
+COPY --chmod=777 ./entrypoint.sh /docker/entrypoint.sh
+COPY --chmod=777 ./sd-agent /docker/sd-agent
+COPY ./sd-resource/extensions-builtin/tablestore-sd-manager-extension/scripts/tablestore-sd-manager.py /built-in/extensions-builtin/tablestore-sd-manager-extension/scripts/tablestore-sd-manager.py
+
+RUN cp -R ${ROOT}/extensions-builtin/* ${SD_BUILTIN}/extensions-builtin/
