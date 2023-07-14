@@ -5,7 +5,7 @@ vars:
   region: "{{ region }}" 
   serviceName: "{{ serviceName }}"
   functionName: "{{ functionName }}" 
-  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v2{{ else if type === '真人风格'}}realman-v2{{ else }}sd1.5-v{{/if}}" 
+  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v2{{ else if type === '真人风格'}}realman-v2{{ else }}sd1.5-v2{{/if}}" 
   filemgrToken: "{{ filemgrToken || '' }}"
   extraArgs: "{{ extraArgs || '' }}{{ if webuiEnabled === false }} --nowebui{{/if}}{{ if webuiAuth !== '' && webuiAuth !== undefined }} --gradio-auth {{webuiAuth}}{{/if}}{{ if apiEnabled }} --api{{/if}}{{ if apiAuth !== '' && apiAuth !== undefined }} --api-auth {{apiAuth}}{{/if}}"
   service:
@@ -64,6 +64,7 @@ services:
           protocol: HTTP
           routeConfigs:
             - path: /*
+              
   filemgr:
     component: fc 
     actions: 
@@ -88,6 +89,9 @@ services:
             - ./server
         environmentVariables:
           TOKEN: ${vars.filemgrToken}
+          SD_VERSION: ""
+          SD_FUNCTION_NAME: ${stable-diffusion.props.function.name}
+          SD_DOMAIN: ${stable-diffusion.output.url.custom_domain[0].domain}
         layers:
           - "acs:fc:${vars.region}:official:layers/ServerlessDevs/versions/1"
       triggers:
