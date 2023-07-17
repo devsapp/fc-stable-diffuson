@@ -12,7 +12,7 @@ vars:
     name: ${vars.serviceName}
     description: 'stable-diffusion 部署到函数计算'
     internetAccess: true
-    {{ if roleArn !== '' && roleArn !== undefined }}role: "{{roleArn}}"
+    {{ if roleArn !== '' && roleArn !== undefined }}role: "{{roleArn}}"{{/if}}
     {{ if nasEnabled === true }}nasConfig: auto{{/if}}
 
 services:
