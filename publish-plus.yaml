@@ -1,0 +1,122 @@
+Type: Application
+Name: fc-stable-diffusion-plus
+Provider:
+  - 阿里云
+Version: 1.0.0
+Description: 使用serverless devs将stable-diffusion-plus部署到阿里云函数计算上
+HomePage: https://github.com/OhYee/fc-stable-diffuson
+Tags: #标签详情
+  - 部署函数
+Category: Web框架
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - serviceName
+    - functionName
+    - type
+    - nasEnabled
+    - webuiEnabled
+    - apiEnabled
+    - roleArn
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: 
+      description: 创建应用所在的地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-shenzhen
+    serviceName:
+      title: 服务名
+      type: string
+      default: fc-stable-diffusion-plus
+      pattern: "^[a-zA-Z_][a-zA-Z0-9-_:/.]{0,127}$"
+      description: 您可以根据需要设置不同的服务名，同一个服务会共享部分第三方云产品资源
+    functionName:
+      title: 函数名
+      type: string
+      default: sd
+      pattern: "^[a-zA-Z_][a-zA-Z0-9-_:/.]{0,127}$"
+      description: 您可以根据需要多次创建该应用，通过函数名来区分出不同的镜像地址
+    type:
+      title: 绘图类型
+      type: string
+      default: 动漫风格
+      description: |+
+        根据不同的绘图风格，将会自动为您选择不同的社区镜像以供测试。
+        注意：
+        函数计算是 Serverless 架构形式的计算平台，所有的容器镜像、代码、参考示例、开源信息均为用户自行所有，不作为函数计算本身提供的服务；
+        当前应用仅为案例，供使用者参考和学习使用，如果有生产使用需要，需要使用者自行完善和优化；
+        当前应用会消耗 GPU 资源，购买 GPU 资源包可以降低您的使用成本。
+      enum:
+        - SD1.5
+        - 动漫风格
+        - 真人风格
+
+    nasEnabled:
+      title: 启用 NAS
+      type: boolean
+      default: true
+      description: |+
+        启用 NAS 将允许您上传自定义的模型、插件，提升 Stable Diffusion 自由度及可定制性。
+        启用 NAS 后将会为您自动创建 NAS 实例，并挂载至 /mnt/auto 目录，这可能会导致额外的费用。
+        与函数计算 Serverless 模式不同，NAS 属于存储产品，即使未读取仍然需要收取文件存储费用，建议搭配 NAS 资源包使用。
+
+    webuiEnabled:
+      title: 启用 WebUI 模式
+      type: boolean
+      default: true
+      description: |+
+        将开启 webui 页面，您可以通过网页生成图片
+    webuiAuth:
+      title: WebUI 鉴权
+      type: string
+      pattern: "^([^:,]+:[^:,]+(,[^:,]+:[^:,]+)*)*$"
+      description: |+
+        WebUI 鉴权，访问页面时需要进行鉴权操作，只有通过鉴权后才能进入界面，避免链接泄漏后导致额外费用。格式：“用户名:密码”，多个用户使用英文逗号分隔。留空不开启鉴权
+
+    apiEnabled:
+      title: 启用 API 模式
+      type: boolean
+      default: true
+      description: |+
+        将开启 api 模式，可在 /docs 目录查看所有接口文档，并通过接口生成图片。
+    apiAuth:
+      title: API 鉴权
+      type: string
+      pattern: "^([^:,]+:[^:,]+(,[^:,]+:[^:,]+)*)*$"
+      description: |+
+        API 鉴权，只有通过鉴权才能调用接口，避免链接泄漏后导致额外费用。格式：“用户名:密码”，多个用户使用英文逗号分隔。留空不开启鉴权
+   
+    extraArgs:
+      title: Stable Diffusion 参数
+      type: string
+      description: |+
+        您可以根据需要添加额外的 Stable Diffusion 参数。全部参数见 https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Command-Line-Arguments-and-Settings
+  
+    filemgrToken:
+      title: "FC 文件管理器密钥"
+      type: string
+      description: 用于管理 NAS 文件的文件管理器，配置密钥可以避免被恶意访问。留空则不进行鉴权。'
+    
+    roleArn:
+      title: RAM 角色 ARN
+      type: string
+      default: ''
+      pattern: '^acs:ram::[0-9]*:role/.*$'
+      description: |
+        函数计算访问云服务时使用的服务角色，需要填写具体的角色ARN，格式为acs:ram::$account-id>:role/$role-name。例如：acs:ram::14310000000:role/aliyunfcdefaultrole。
+        如果您没有特殊要求，可以使用函数计算提供的默认的服务角色，即AliyunFCDefaultRole, 并增加 AliyunFCFullAccess 权限。如果您首次使用函数计算，可以访问 https://fcnext.console.aliyun.com 进行授权。
+        详细文档参考 https://help.aliyun.com/document_detail/181589.html#section-o93-dbr-z6o"
+      required: true
+      x-role:
+        name: fcdeployrole
+        service: fc
+        authorities:
+          - AliyunFCDefaultRolePolicy
+          - AliyunFCFullAccess

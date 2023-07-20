@@ -31,6 +31,22 @@ jobs:
       - name: Publish package
         env:
           publish_token: ${{ secrets.alibaba_registry_publish_token }}
+          release_body: ${{ github.event.release.body }}
+          release_name: ${{ github.event.release.name }}
         run: |
-          ls
-          python hub-publish.py
+          if [[ -n $(echo "$release_name $release_body" | grep -P 'fc-stable-diffusion(?!-)') ]]; then
+              echo "release fc-stable-diffusion"
+              python hub-publish.py
+          fi
+
+          if [[ -n $(echo "$release_name $release_body" | grep -P 'fc-stable-diffusion-plus') ]]; then
+              echo "release fc-stable-diffusion-plus"
+              mv publish-plus.yaml publish.yaml
+              python hub-publish.py
+          fi
+
+          if [[ -n $(echo "$release_name $release_body" | grep -P 'fc-stable-diffusion-api') ]]; then
+              echo "release fc-stable-diffusion-api"
+              mv publish-api.yaml publish.yaml
+              python hub-publish.py
+          fi

@@ -55,7 +55,12 @@ else
   if [ ! -e "${NAS_DIR}/ui-config.json" ]; then
     echo "no ui-config.json, copy it"
     cp "${SD_BUILTIN}/ui-config.json" "${NAS_DIR}/ui-config.json"
-  fi
+  fi 
+fi
+
+if [ ! -e "${NAS_DIR}/styles.csv" ]; then
+  echo "no styles.csv, create it"
+  touch "${NAS_DIR}/styles.csv"
 fi
 
 
@@ -71,6 +76,7 @@ MOUNTS["${ROOT}/config.json"]="${NAS_DIR}/config.json"
 MOUNTS["${ROOT}/ui-config.json"]="${NAS_DIR}/ui-config.json"
 MOUNTS["${ROOT}/extensions"]="${NAS_DIR}/extensions"
 MOUNTS["${ROOT}/outputs"]="${NAS_DIR}/outputs"
+MOUNTS["${ROOT}/styles.csv"]="${NAS_DIR}/styles.csv"
 # MOUNTS["${ROOT}/javascript"]="${NAS_DIR}/javascript"
 # MOUNTS["${ROOT}/html"]="${NAS_DIR}/html"
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="${NAS_DIR}/repositories/CodeFormer/weights/facelib"
