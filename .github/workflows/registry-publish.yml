@@ -42,11 +42,13 @@ jobs:
           if [[ -n $(echo "$release_name $release_body" | grep -P 'fc-stable-diffusion-plus') ]]; then
               echo "release fc-stable-diffusion-plus"
               mv publish-plus.yaml publish.yaml
+              mv readme-plus.md readme.md
               python hub-publish.py
           fi
 
           if [[ -n $(echo "$release_name $release_body" | grep -P 'fc-stable-diffusion-api') ]]; then
               echo "release fc-stable-diffusion-api"
               mv publish-api.yaml publish.yaml
+              mv readme-api.md readme.md
               python hub-publish.py
           fi
