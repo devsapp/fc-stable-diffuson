@@ -96,6 +96,7 @@ services:
           SD_DOMAIN: ${stable-diffusion.output.url.custom_domain[0].domain}
         layers:
           - "acs:fc:${vars.region}:official:layers/ServerlessDevs/versions/1"
+          - "acs:fc:${vars.region}:official:layers/Python310/versions/2"
       triggers:
         - name: httpTrigger
           type: http
