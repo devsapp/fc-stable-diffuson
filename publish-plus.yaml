@@ -2,7 +2,7 @@ Type: Application
 Name: fc-stable-diffusion-plus
 Provider:
   - 阿里云
-Version: 1.0.5
+Version: 1.0.6
 Description: 使用serverless devs将stable-diffusion-plus部署到阿里云函数计算上
 HomePage: https://github.com/OhYee/fc-stable-diffuson
 Tags: #标签详情
@@ -83,7 +83,7 @@ Parameters:
     apiEnabled:
       title: 启用 API 模式
       type: boolean
-      default: true
+      default: false
       description: |+
         将开启 api 模式，可在 /docs 目录查看所有接口文档，并通过接口生成图片。
     apiAuth:
