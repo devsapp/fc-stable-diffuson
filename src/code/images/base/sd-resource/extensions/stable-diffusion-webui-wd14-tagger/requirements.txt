@@ -1,0 +1,18 @@
+deepdanbooru
+onnxruntime; python_version != '3.9' and sys_platform == 'darwin' and platform_machine != 'arm64'
+onnxruntime-coreml; python_version == '3.9' and sys_platform == 'darwin' and platform_machine != 'arm64'
+onnxruntime-silicon; sys_platform == 'darwin' and platform_machine == 'arm64'
+onnxruntime-gpu; sys_platform != 'darwin'
+jsonschema
+fastapi
+gradio
+huggingface_hub
+numpy
+opencv_contrib_python
+opencv_python
+opencv_python_headless
+packaging
+pandas
+Pillow
+tensorflow
+tqdm

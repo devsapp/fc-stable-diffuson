@@ -13,11 +13,11 @@ help: ## 帮助文件
 	
 NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
-BASE_TAG=basev2
+BASE_TAG=basev3
 
-SD15_VERSION=v2
-ANIME_VERSION=v2
-REALMAN_VERSION=v2
+SD15_VERSION=v3
+ANIME_VERSION=v3
+REALMAN_VERSION=v3
 
 
 push: push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
@@ -27,13 +27,13 @@ build-base: ## 构建基础镜像
 	DOCKER_BUILDKIT=1 docker build -f code/images/base/Dockerfile -t registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} code/images/base
 
 build-sd1.5: ## 构建 sd 1.5
-	docker build -f code/images/Dockerfile --target sd1.5 -t stable-diffusion:sd1.5-${SD15_VERSION} code/images/
+	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target sd1.5 -t stable-diffusion:sd1.5-${SD15_VERSION} code/images/
 
 build-anime: ## 构建动漫风格
-	docker build -f code/images/Dockerfile --target anime -t stable-diffusion:anime-${ANIME_VERSION} code/images/
+	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target anime -t stable-diffusion:anime-${ANIME_VERSION} code/images/
 	
 build-realman: ## 构建真人风格
-	docker build -f code/images/Dockerfile --target realman -t stable-diffusion:realman-${REALMAN_VERSION} code/images/
+	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target realman -t stable-diffusion:realman-${REALMAN_VERSION} code/images/
 
 build: build-sd1.5 build-anime build-realman # 构建全部镜像
 

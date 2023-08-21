@@ -22,7 +22,7 @@
 
 <codeUrl>
 
-- [:smiley_cat: 代码](https://github.com/devsapp/fc-stable-diffusion-plus)
+- [:smiley_cat: 代码](https://github.com/devsapp/fc-stable-diffuson)
 
 </codeUrl>
 <preview>

@@ -1,0 +1,83 @@
+/*
+# Copyright (C) 2023 Deforum LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+Contact the authors: https://deforum.github.io/
+*/
+
+#vid_to_interpolate_chosen_file .w-full, #pics_to_interpolate_chosen_file .w-full,  #vid_to_upscale_chosen_file .w-full, #controlnet_input_video_chosen_file .w-full, #controlnet_input_video_mask_chosen_file .w-full,#vid_to_depth_chosen_file .w-full {
+	display: flex !important;
+	align-items: flex-start !important;
+	justify-content: center !important;
+}
+
+#tab_deforum_interface #hybrid_msg_html {
+	color: Tomato !important;
+	margin-top: 5px !important;
+	text-align: center !important;
+	font-size: 20px !important;
+	font-weight: bold !important;
+}
+
+#tab_deforum_interface #leres_license_msg {
+	color: GoldenRod;
+}
+
+#image_buttons_deforum #img2img_tab,
+#image_buttons_deforum #inpaint_tab,
+#image_buttons_deforum #extras_tab,
+#save_zip_deforum, #save_deforum {
+	display: none !important;
+}
+
+#main_top_info_accord .label-wrap {
+	gap:2px;
+	padding: 0.5rem; 
+}
+#tab_deforum_interface #controlnet_not_found_html_msg, #tab_deforum_interface #depth_warp_msg_html {
+	color: Tomato;
+}
+
+#below_interpolate_butts_msg {
+	text-align: center !important;
+}
+
+#tab_deforum_interface #settings_path_msg {
+	margin: 0.6em;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+#tab_deforum_interface .tabs.gradio-tabs.svelte-1g805jl .svelte-vt1mxs.gap {
+	gap:4px !important;
+}
+
+#tab_deforum_interface #main_top_info_accord {
+	padding: 1px; 
+}
+
+#add_soundtrack .svelte-1p9xokt {
+	padding: 2.25px;
+}
+
+#tab_deforum_interface .wrap.svelte-xwlu1w, #custom_setting_file {
+	height: 85px !important;
+	min-height: 85px !important;
+}
+
+#tab_deforum_interface .file-preview-holder {
+  overflow-y: auto;
+  max-height: 60px;
+}
