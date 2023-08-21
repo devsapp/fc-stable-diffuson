@@ -115,6 +115,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 ENV SD_BUILTIN=/built-in
 COPY ./sd-resource ${SD_BUILTIN}
+RUN cp -R ${ROOT}/scripts ${SD_BUILTIN}/scripts
 
 # 中文提示词翻译 299M
 COPY --from=extensions /sd-prompt-translator  ${SD_BUILTIN}/extensions/sd-prompt-translator/scripts/models

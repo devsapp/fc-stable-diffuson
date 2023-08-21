@@ -156,7 +156,6 @@
   "disabled_extensions": [
     "adetailer",
     "sd-prompt-translator",
-    "sd-webui-controlnet",
     "sd-webui-deforum",
     "sd-webui-llul",
     "sd-webui-prompt-all-in-one",
