@@ -52,6 +52,12 @@ else
     cp "${SD_BUILTIN}/config.json" "${NAS_DIR}/config.json"
   fi
 
+  if [ "$(wc -c ${NAS_DIR}/config.json | cut -f 1 -d ' ')" == "0" ]; then
+    echo "config.json is empty, copy it"
+    rm -f "${SD_BUILTIN}/config.json"
+    cp "${SD_BUILTIN}/config.json" "${NAS_DIR}/config.json"
+  fi
+
   if [ ! -e "${NAS_DIR}/ui-config.json" ]; then
     echo "no ui-config.json, copy it"
     cp "${SD_BUILTIN}/ui-config.json" "${NAS_DIR}/ui-config.json"
@@ -66,7 +72,7 @@ fi
 
 declare -A MOUNTS
 
-MOUNTS["/root/.cache"]="${NAS_DIR}/cache"
+MOUNTS["/root"]="${NAS_DIR}/root"
 MOUNTS["${ROOT}/models"]="${NAS_DIR}/models"
 MOUNTS["${ROOT}/localizations"]="${NAS_DIR}/localizations"
 MOUNTS["${ROOT}/configs"]="${NAS_DIR}/configs"
@@ -77,6 +83,7 @@ MOUNTS["${ROOT}/ui-config.json"]="${NAS_DIR}/ui-config.json"
 MOUNTS["${ROOT}/extensions"]="${NAS_DIR}/extensions"
 MOUNTS["${ROOT}/outputs"]="${NAS_DIR}/outputs"
 MOUNTS["${ROOT}/styles.csv"]="${NAS_DIR}/styles.csv"
+MOUNTS["${ROOT}/scripts"]="${NAS_DIR}/scripts"
 # MOUNTS["${ROOT}/javascript"]="${NAS_DIR}/javascript"
 # MOUNTS["${ROOT}/html"]="${NAS_DIR}/html"
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="${NAS_DIR}/repositories/CodeFormer/weights/facelib"
@@ -92,11 +99,11 @@ if [ -f "/mnt/auto/sd/startup.sh" ]; then
   popd
 fi
 
-
 CLI_ARGS="${CLI_ARGS:---xformers --enable-insecure-extension-access --skip-version-check --no-download-sd-model}"
 EXTRA_ARGS="${EXTRA_ARGS:-}"
 
 export ARGS="${CLI_ARGS} ${EXTRA_ARGS}"
+export PYTHONPATH="${PYTHONPATH:-}:${NAS_DIR}/python"
 
 echo "args: $ARGS"
 

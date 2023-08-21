@@ -123,7 +123,10 @@
   "dimensions_and_batch_together": true,
   "keyedit_precision_attention": 0.1,
   "keyedit_precision_extra": 0.05,
-  "quicksettings": "sd_model_checkpoint",
+  "quicksettings_list": [
+    "sd_model_checkpoint",
+    "sd_vae"
+  ],
   "hidden_tabs": [],
   "ui_reorder": "inpaint, sampler, checkboxes, hires_fix, dimensions, cfg, seed, batch, override_settings, scripts",
   "ui_extra_networks_tab_reorder": "",
@@ -150,5 +153,19 @@
   "uni_pc_lower_order_final": true,
   "postprocessing_enable_in_main_ui": [],
   "postprocessing_operation_order": [],
+  "disabled_extensions": [
+    "adetailer",
+    "sd-prompt-translator",
+    "sd-webui-controlnet",
+    "sd-webui-deforum",
+    "sd-webui-llul",
+    "sd-webui-prompt-all-in-one",
+    "sd-webui-roop",
+    "sdweb-easy-prompt-selector",
+    "stable-diffusion-webui-images-browser",
+    "stable-diffusion-webui-rembg",
+    "stable-diffusion-webui-wd14-tagger",
+    "stable-diffusion-webui-dataset-tag-editor"
+  ],
   "upscaling_max_images_in_cache": 5
 }

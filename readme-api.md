@@ -24,7 +24,7 @@
 
 <codeUrl>
 
-- [:smiley_cat: 代码](https://github.com/devsapp/fc-stable-diffusion-api)
+- [:smiley_cat: 代码](https://github.com/devsapp/fc-stable-diffuson)
 
 </codeUrl>
 <preview>
