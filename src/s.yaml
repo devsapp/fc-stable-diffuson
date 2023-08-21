@@ -26,6 +26,7 @@ services:
       service: ${vars.service}
       function:
         name: ${vars.functionName}
+        description: Stable Diffusion WebUI 函数
         handler: index.handler
         timeout: 600
         diskSize: 512
@@ -77,7 +78,7 @@ services:
       service: ${vars.service}
       function:
         name: "admin"
-        description: 'FC 文件管理器'
+        description: '模型管理辅助工具'
         codeUri: './code/filemgr'
         runtime: custom
         timeout: 7200

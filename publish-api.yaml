@@ -2,7 +2,7 @@ Type: Application
 Name: fc-stable-diffusion-api
 Provider:
   - 阿里云
-Version: dev
+Version: 1.0.7
 Description: 使用serverless devs将stable-diffusion-api部署到阿里云函数计算上
 HomePage: https://github.com/OhYee/fc-stable-diffuson
 Tags: #标签详情
