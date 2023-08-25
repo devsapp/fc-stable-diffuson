@@ -68,7 +68,7 @@ RUN aria2c -x 8 --dir "/" --out "inswapper_128.onnx" "https://huggingface.co/hen
 RUN aria2c -x 8 --dir "/" --out "detector.onnx" "https://huggingface.co/s0md3v/nudity-checker/resolve/main/detector.onnx" 
 RUN aria2c -x 8 --dir "/" --out "control_v11p_sd15_scribble.pth" "https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/main/control_v11p_sd15_scribble.pth"
 RUN aria2c -x 8 --dir "/" --out "control_v11p_sd15_scribble.yaml" "https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/main/control_v11p_sd15_scribble.yaml"
-RUN aria2c -x 8 --dir "/" --out "diffusion_pytorch_model.safetensors" "https://huggingface.co/ioclab/control_v1p_sd15_brightness/resolve/main/diffusion_pytorch_model.safetensors"
+RUN aria2c -x 8 --dir "/" --out "control_v1p_sd15_illumination.safetensors" "https://huggingface.co/ioclab/ioc-controlnet/resolve/main/models/control_v1p_sd15_illumination.safetensors"
 
 
 # ############################# 
@@ -76,7 +76,7 @@ RUN aria2c -x 8 --dir "/" --out "diffusion_pytorch_model.safetensors" "https://h
 # #############################
 
 
-FROM python:3.10.9-slim as base
+FROM python:3.10.9-slim as sd_base
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
@@ -109,9 +109,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         insightface==0.7.3 tensorflow ifnude && \
     pip install xformers==0.0.20 taming-transformers-rom1504 && \
     pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
-    
+
+# fix using lora in only api mode 
+COPY ./fix.diff ${ROOT}/fix.diff
+RUN cd ${ROOT} && git apply --whitespace=fix  fix.diff
 
 # ==========================
+
+FROM sd_base as base
 
 ENV SD_BUILTIN=/built-in
 COPY ./sd-resource ${SD_BUILTIN}
@@ -143,7 +148,7 @@ COPY --from=models /detector.onnx ${SD_BUILTIN}/root/.ifnude/detector.onnx
 # controlnet 
 COPY --from=models /control_v11p_sd15_scribble.pth ${SD_BUILTIN}/models/ControlNet/control_v11p_sd15_scribble.pth
 COPY --from=models /control_v11p_sd15_scribble.yaml ${SD_BUILTIN}/models/ControlNet/control_v11p_sd15_scribble.yaml
-COPY --from=models /diffusion_pytorch_model.safetensors ${SD_BUILTIN}/models/ControlNet/control_v1p_sd15_brightness
+COPY --from=models /control_v1p_sd15_illumination.safetensors ${SD_BUILTIN}/models/ControlNet/control_v1p_sd15_illumination.safetensors
 
 # adetailer
 COPY --from=extensions /models--Bingsu--adetailer ${SD_BUILTIN}/root/.cache/huggingface/hub/models--Bingsu--adetailer

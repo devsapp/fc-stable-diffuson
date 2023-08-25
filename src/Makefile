@@ -13,11 +13,11 @@ help: ## 帮助文件
 	
 NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
-BASE_TAG=basev3
+BASE_TAG=basev4
 
-SD15_VERSION=v4
-ANIME_VERSION=v4
-REALMAN_VERSION=v4
+SD15_VERSION=v5
+ANIME_VERSION=v5
+REALMAN_VERSION=v5
 
 
 push: push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry

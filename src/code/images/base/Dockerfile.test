@@ -1,3 +1,12 @@
-FROM registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:realman-v3
+FROM alpine:3.17 as models
+
+RUN apk add --no-cache aria2
+
+RUN aria2c -x 8 --dir "/" --out "control_v1p_sd15_illumination.safetensors" "https://huggingface.co/ioclab/ioc-controlnet/resolve/main/models/control_v1p_sd15_illumination.safetensors"
+
+
+FROM registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:sd1.5-v3
 
 RUN cp -R ${ROOT}/scripts ${SD_BUILTIN}/scripts && sed -i ${SD_BUILTIN}/config.json -e 's/"sd-webui-controlnet",//'
+COPY --from=models /control_v1p_sd15_illumination.safetensors ${SD_BUILTIN}/models/ControlNet/control_v1p_sd15_illumination.safetensors
+COPY ./entrypoint.sh /docker/entrypoint.sh

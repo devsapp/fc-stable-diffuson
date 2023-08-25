@@ -26,7 +26,7 @@ RUN aria2c -x 16 --dir "/" --out "sd_xl_base_1.0_0.9vae.safetensors" "https://hu
 RUN aria2c -x 16 --dir "/" --out "sdxl_vae.safetensors" "https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors" 
 
 
-FROM registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev3 as base
+FROM registry.cn-hangzhou.aliyuncs.com/aliyun-fc/fc-stable-diffusion:basev4 as base
 
 COPY --from=models /cIF8Anime2.43ol.ckpt ${SD_BUILTIN}/models/VAE/cIF8Anime2.43ol.ckpt
 # COPY --from=models /vae-ft-mse-840000-ema-pruned.safetensors ${SD_BUILTIN}/models/VAE/vae-ft-mse-840000-ema-pruned.safetensors
