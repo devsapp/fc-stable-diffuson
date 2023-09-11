@@ -78,6 +78,13 @@ push-ap: build ## push 镜像到新加坡
 		docker push $$IMAGE:$$tag; \
 	done
 
+push-jp:
+	IMAGE=registry.ap-northeast-1.aliyuncs.com/${NAMESPACE}/${REPO} && \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}"; do \
+		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
+		docker push $$IMAGE:$$tag; \
+	done
+	
 push-base-ap: build ## push 镜像到新加坡
 	docker tag registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
 	docker push registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG}
@@ -87,7 +94,7 @@ sync-from-ap: ## 同步新加坡镜像到其他 region
 	docker tag  registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
 	docker push registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
 	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}"; do \
-		for region in "cn-hangzhou" "cn-beijing" "cn-shanghai" "cn-shenzhen"; do \
+		for region in "cn-hangzhou" "cn-beijing" "cn-shanghai" "cn-shenzhen" "ap-northeast-1"; do \
 			docker pull registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && \
 			docker tag registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} registry.$${region}.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && \
 			docker push registry.$${region}.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && continue; break; \
@@ -95,7 +102,7 @@ sync-from-ap: ## 同步新加坡镜像到其他 region
 	done
 	
 
-push: push-beijing push-shanghai push-hangzhou push-shenzhen
+push: push-beijing push-shanghai push-hangzhou push-shenzhen push-jp
 
 all-ap: build-base build push-base-ap push-ap
 
