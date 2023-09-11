@@ -1,0 +1,89 @@
+.thumbnails.svelte-1tkea93.svelte-1tkea93 {
+  justify-content: initial;
+}
+
+[id^='image_browser_tab_'] .thumbnails.scroll-hide {
+  justify-content: initial;
+}
+
+div[id^="image_browser_tab"][id$="image_browser_gallery"].hide_loading > .svelte-gjihhp {
+  display: none;
+}
+
+.image_browser_gallery img {
+  object-fit: scale-down !important;
+}
+
+/* hack to fix the alignment of the page index, refresh, and delete buttons*/
+div[id$='_control_image_browser_page_index'] {
+  margin-top: -20px !important;
+  display: grid;
+  justify-content: end;
+}
+button[id$='_control_image_browser_refresh_index']{
+  align-self: center !important;
+  height: 2em !important;
+  cursor: pointer !important;
+}
+button[id$='_image_browser_del_img_btn'] {
+  margin-top: calc(var(--body-text-size) * var(--line-sm));
+}
+
+/* Workaround until gradio version is updated to a version that fixes it
+   see https://github.com/gradio-app/gradio/issues/1590
+*/
+#tab_image_browser .thumbnail-item > img {
+  width: auto !important;
+  height: auto !important;
+}
+
+#tab_image_browser .exif-search-panel,
+#tab_image_browser .no-gap-top {
+  margin-top: calc(var(--layout-gap) * -1);
+}
+
+#tab_image_browser .mb-0 {
+  margin-bottom: 0;
+}
+
+#tab_image_browser .text-subdued {
+  color: var(--body-text-color-subdued);
+}
+
+#tab_image_browser button[id$='_control_image_browser_first_page'],
+#tab_image_browser button[id$='_control_image_browser_prev_page'],
+#tab_image_browser button[id$='_control_image_browser_next_page'],
+#tab_image_browser button[id$='_control_image_browser_end_page'] {
+  cursor: pointer !important
+}
+
+#tab_image_browser div[id$='_control_image_browser_page_index'],
+#tab_image_browser .right-column-panel {
+  margin-top: calc(var(--body-text-size) * var(--line-sm) * -1) !important
+}
+
+#tab_image_browser .sort-panel button {
+  margin-top: calc(var(--body-text-size) * var(--line-sm));
+  align-self: center
+}
+
+#tab_image_browser .ranking-filter-input input:disabled{
+  cursor: not-allowed
+}
+
+#tab_image_browser .thumbnails .thumbnail-item:first-child{
+  margin-left: var(--spacing-lg);
+}
+
+#tab_image_browser .thumbnails .thumbnail-item:last-child{
+  margin-right: var(--spacing-lg);
+}
+
+#tab_image_browser .page-index-panel > div {
+  flex-wrap: nowrap;
+  align-self: flex-start;
+}
+
+#tab_image_browser .page-index-panel > div > div {
+  min-width: auto
+}
