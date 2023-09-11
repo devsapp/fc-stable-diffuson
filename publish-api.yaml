@@ -121,3 +121,9 @@ Parameters:
         authorities:
           - AliyunFCDefaultRolePolicy
           - AliyunFCFullAccess
+    enableCollect:
+      title: 协助改善体验
+      type: boolean
+      default: true
+      description: |+
+        通过开启该功能，可以将您的非敏感操作共享给我们，以便优化和改善应用。非敏感操作指 Stable Diffusion 使用、报错信息，不涉及提示词、参数、生成出的图片等敏感数据。

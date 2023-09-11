@@ -8,6 +8,7 @@ vars:
   imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v7{{ else if type === '真人风格'}}realman-v7{{ else }}sd1.5-v7{{/if}}" 
   filemgrToken: "{{ filemgrToken || '' }}"
   extraArgs: "{{ extraArgs || '' }}{{ if webuiEnabled === false }} --nowebui{{/if}}{{ if webuiAuth !== '' && webuiAuth !== undefined }} --gradio-auth {{webuiAuth}}{{/if}}{{ if apiEnabled }} --api{{/if}}{{ if apiAuth !== '' && apiAuth !== undefined }} --api-auth {{apiAuth}}{{/if}}"
+  enableCollect: "{{ enableCollect || '' }}"
   service:
     name: ${vars.serviceName}
     description: 'stable-diffusion 部署到函数计算'
@@ -48,6 +49,7 @@ services:
         asyncConfiguration: {}
         environmentVariables:
           EXTRA_ARGS: ${vars.extraArgs}
+          ENABLE_COLLECT: ${vars.enableCollect}
       triggers:
         - name: defaultTrigger
           description: ''
@@ -92,6 +94,7 @@ services:
             - ./server
         environmentVariables:
           TOKEN: ${vars.filemgrToken}
+          ENABLE_COLLECT: ${vars.enableCollect}
           SD_VERSION: ""
           SD_FUNCTION_NAME: ${stable-diffusion.props.function.name}
           SD_DOMAIN: ${stable-diffusion.output.url.custom_domain[0].domain}
