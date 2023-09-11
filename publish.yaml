@@ -16,6 +16,7 @@ Parameters:
     - serviceName
     - functionName
     - type
+    - enableCollect
   properties:
     region:
       title: 地域

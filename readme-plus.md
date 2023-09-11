@@ -42,7 +42,7 @@
 
 | 服务 |  备注  |
 | --- |  --- |
-| 函数计算 FC |  对AIGC进行GPU推理计算，新用户请先领取 <a href="https://free.aliyun.com/?product=9555928&crowd=personal" _blank="target">试用资源包</a> |
+| 函数计算 FC |  对AIGC进行GPU推理计算，新用户请先领取 <a href="https://free.aliyun.com/?product=9555928&crowd=personal" target="_blank">试用资源包</a> |
 
 </service>
 
