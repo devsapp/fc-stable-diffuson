@@ -166,5 +166,6 @@
     "stable-diffusion-webui-wd14-tagger",
     "stable-diffusion-webui-dataset-tag-editor"
   ],
-  "upscaling_max_images_in_cache": 5
+  "upscaling_max_images_in_cache": 5,
+  "disable_mmap_load_safetensors": true
 }

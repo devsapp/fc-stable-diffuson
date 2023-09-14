@@ -113,8 +113,8 @@ export PYTHONPATH="${PYTHONPATH:-}:${NAS_DIR}/python"
 
 echo "args: $ARGS"
 
-# if [ -z "$DISABLE_AGENT" ]; then
-#   /docker/sd-agent python -u webui.py --listen --port 7861 ${ARGS}
-# else 
-python -u webui.py --listen --port 7860 ${ARGS}
-# fi
+if [ -z "$DISABLE_AGENT" ]; then
+  /docker/sd-agent python -u webui.py --listen --port 7861 ${ARGS}
+else 
+  python -u webui.py --listen --port 7860 ${ARGS}
+fi

@@ -1,7 +1,8 @@
-FROM stable-diffusion:realman-v6
+FROM stable-diffusion:realman-v8
 
-COPY --chmod=777 ./entrypoint.sh /docker/entrypoint.sh
+RUN apt install unzip
+RUN aria2c -x 8 --dir "/" --out "buffalo_l.zip" "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip" && \
+    mkdir -p ${SD_BUILTIN}/root/.insightface/models && \
+    unzip /buffalo_l.zip -d ${SD_BUILTIN}/root/.insightface/models && \
+    rm /buffalo_l.zip
 COPY --chmod=777 ./sd-agent /docker/sd-agent
-COPY ./sd-resource/extensions-builtin/tablestore-sd-manager-extension/scripts/tablestore-sd-manager.py /built-in/extensions-builtin/tablestore-sd-manager-extension/scripts/tablestore-sd-manager.py
-
-RUN cp -R ${ROOT}/extensions-builtin/* ${SD_BUILTIN}/extensions-builtin/

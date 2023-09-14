@@ -69,8 +69,8 @@ RUN aria2c -x 8 --dir "/" --out "detector.onnx" "https://huggingface.co/s0md3v/n
 RUN aria2c -x 8 --dir "/" --out "control_v11p_sd15_scribble.pth" "https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/main/control_v11p_sd15_scribble.pth"
 RUN aria2c -x 8 --dir "/" --out "control_v11p_sd15_scribble.yaml" "https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/main/control_v11p_sd15_scribble.yaml"
 RUN aria2c -x 8 --dir "/" --out "control_v1p_sd15_illumination.safetensors" "https://huggingface.co/ioclab/ioc-controlnet/resolve/main/models/control_v1p_sd15_illumination.safetensors"
-
-
+RUN aria2c -x 8 --dir "/" --out "buffalo_l.zip" "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip"
+  
 # ############################# 
 # #           dist            #
 # #############################
@@ -85,7 +85,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     apt install -y \
         wget git fonts-dejavu-core rsync git jq moreutils aria2 \
         ffmpeg libglfw3-dev libgles2-mesa-dev pkg-config libcairo2 libcairo2-dev \
-        libpython3.9-dev gcc g++ procps
+        libpython3.9-dev gcc g++ procps unzip curl
 
 ENV ROOT=/stable-diffusion-webui
 
@@ -120,7 +120,8 @@ FROM sd_base as base
 
 ENV SD_BUILTIN=/built-in
 COPY ./sd-resource ${SD_BUILTIN}
-RUN cp -R ${ROOT}/scripts ${SD_BUILTIN}/scripts
+RUN cp -R ${ROOT}/scripts ${SD_BUILTIN}/scripts && \
+    cp -R ${ROOT}/extensions-builtin/* ${SD_BUILTIN}/extensions-builtin/
 
 # 中文提示词翻译 299M
 COPY --from=extensions /sd-prompt-translator  ${SD_BUILTIN}/extensions/sd-prompt-translator/scripts/models
@@ -144,6 +145,9 @@ COPY --from=models /model-resnet_custom_v3.pt ${SD_BUILTIN}/models/torch_deepdan
 # roop 554M + 
 COPY --from=models /inswapper_128.onnx ${SD_BUILTIN}/models/roop/inswapper_128.onnx
 COPY --from=models /detector.onnx ${SD_BUILTIN}/root/.ifnude/detector.onnx
+RUN --mount=type=bind,target=/buffalo_l.zip,from=models,source=/buffalo_l.zip \
+    mkdir -p ${SD_BUILTIN}/root/.insightface/models && \
+    unzip /buffalo_l.zip -d ${SD_BUILTIN}/root/.insightface/models
 
 # controlnet 
 COPY --from=models /control_v11p_sd15_scribble.pth ${SD_BUILTIN}/models/ControlNet/control_v11p_sd15_scribble.pth

@@ -2,7 +2,7 @@ import json
 import os
 import re
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 import modules.processing as processing
 import modules.scripts as scripts
@@ -49,8 +49,8 @@ class Scripts(scripts.Script):
             data["isImg2Img"] = self.is_img2img
             data['comments'] = getattr(processed, 'comments', None)
             job_timestamp = datetime.strptime(processed.job_timestamp, '%Y%m%d%H%M%S')
-            data['jobStartTime'] = job_timestamp.strftime("%Y-%m-%d %H:%M:%S")
             data['usedTimeInSeconds'] = round(datetime.now().timestamp() - job_timestamp.timestamp())
+            data['jobStartTime'] = job_timestamp.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
             already_saved_as = getattr(image, 'already_saved_as', None)
             if already_saved_as.startswith("/"):
                 data['imagePath'] = already_saved_as
