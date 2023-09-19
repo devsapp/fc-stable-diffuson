@@ -90,7 +90,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
 ENV ROOT=/stable-diffusion-webui
 
 
-ENV SHA=v1.5.1
+ENV SHA=v1.6.0
 RUN --mount=type=cache,target=/root/.cache/pip \
     git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /stable-diffusion-webui && \
     cd stable-diffusion-webui && \
