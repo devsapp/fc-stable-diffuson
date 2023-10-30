@@ -1,8 +1,5 @@
-FROM stable-diffusion:realman-v8
+FROM stable-diffusion:anime-v9
 
-RUN apt install unzip
-RUN aria2c -x 8 --dir "/" --out "buffalo_l.zip" "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip" && \
-    mkdir -p ${SD_BUILTIN}/root/.insightface/models && \
-    unzip /buffalo_l.zip -d ${SD_BUILTIN}/root/.insightface/models && \
-    rm /buffalo_l.zip
-COPY --chmod=777 ./sd-agent /docker/sd-agent
+RUN pip list | awk '/cu12/ { print $1 }' | sed 's/cu12/cu11/g' | grep -v nvidia-nvjitlink-cu11 | xargs pip install && \
+    pip list | awk '/cu12/ { print $1 }' | xargs pip uninstall -y && \
+    rm -rf ${SD_BUILTIN}/root/.cache/huggingface/hub/

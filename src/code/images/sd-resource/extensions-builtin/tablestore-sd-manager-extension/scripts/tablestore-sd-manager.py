@@ -9,8 +9,9 @@ import modules.scripts as scripts
 from modules import shared
 
 tablestore_forward_endpoint = os.getenv("SERVERLESS_SD_FILEMGR_DOMAIN")
+tablestore_token = os.getenv("SERVERLESS_SD_FILEMGR_TOKEN")
 if tablestore_forward_endpoint:
-    tablestore_forward_endpoint = "%s/%s" % (tablestore_forward_endpoint, "ots/forward_extension_data")
+    tablestore_forward_endpoint = "%s/%s" % (tablestore_forward_endpoint, "api/ots/forward_extension_data")
 
 enable_extensions = os.getenv("ENABLE_TABLESTORE_EXTENSION")
 print("tablestore_forward_endpoint:", tablestore_forward_endpoint, ", enable_extensions:", enable_extensions)
@@ -66,6 +67,7 @@ class Scripts(scripts.Script):
         data_as_str = json.dumps(data, ensure_ascii=False)
         try:
             req = urllib.request.Request(url=tablestore_forward_endpoint, data=bytes(data_as_str, 'utf8'), method='POST')
+            req.add_header('TOKEN', tablestore_token)
             with urllib.request.urlopen(req) as response:
                 if 300 > response.getcode() >= 200:
                     print("Tablestore sd manager write data successfully! data:", data_as_str)

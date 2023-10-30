@@ -1,6 +1,0 @@
-coverage
-syrupy
-pytest
-tenacity
-pydantic_requests
-moviepy

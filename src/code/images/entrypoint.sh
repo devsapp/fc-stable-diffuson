@@ -2,6 +2,14 @@
 
 set -Eeuo pipefail
 
+function set_start_time() {
+  START_TIME=$(date '+%s.%N')
+}
+
+function show_cost_time() {
+  echo "$START_TIME $(date '+%s.%N')" | awk "{printf \"$1, cost %f seconds\n\", \$2 - \$1}"
+}
+
 function mount_file() {
   echo Mount $1 to $2
 
@@ -37,35 +45,55 @@ else
   mkdir -p "${NAS_DIR}"
 
 
-  # 去除无用的软链接
-  find -L . -type l -delete
+  IMAGE_TAG_I=$(cat /IMAGE_TAG)
+  IMAGE_TAG_N=$(cat /${NAS_DIR}/IMAGE_TAG 2>/dev/null || echo '') 
 
-  echo "with NAS, mount built-in files to ${NAS_DIR}"
-  
-  find ${SD_BUILTIN} | while read -r file; do
-    SRC="${file}"
-    DST="${NAS_DIR}/${file#$SD_BUILTIN/}"
+  echo "IMAGE_TAG [[${IMAGE_TAG_I}]] [[${IMAGE_TAG_N}]]"
 
-    if [ ! -e "$DST" ] && [ ! -d "$SRC" ] && [ "$DST" != "${NAS_DIR}/config.json" ] && [ "$DST" != "${NAS_DIR}/ui-config.json" ]; then
-      mount_file "$SRC" "$DST"
-    fi
-  done
+  if [ "${IMAGE_TAG_I}" != "${IMAGE_TAG_N}" ]; then 
+    # 去除无用的软链接/空文件夹
+    set_start_time
+    find -L ${NAS_DIR} -type l -delete
+    find ${NAS_DIR} -type d -empty -delete
+    show_cost_time "remove symbolic links"
 
-  if [ ! -e "${NAS_DIR}/config.json" ]; then
-    echo "no config.json, copy it"
-    cp "${SD_BUILTIN}/config.json" "${NAS_DIR}/config.json"
+    
+
+    echo "with NAS, mount built-in files to ${NAS_DIR}"
+    
+    set_start_time
+
+    find ${SD_BUILTIN} | while read -r file; do
+      SRC="${file}"
+      DST="${NAS_DIR}/${file#$SD_BUILTIN/}"
+
+      if [ ! -e "$DST" ] && [ ! -d "$SRC" ] && [ "$DST" != "${NAS_DIR}/config.json" ] && [ "$DST" != "${NAS_DIR}/ui-config.json" ]; then
+        mount_file "$SRC" "$DST"
+      fi
+    done
+
+    if [ ! -e "${NAS_DIR}/ui-config.json" ]; then
+      echo "no ui-config.json, copy it"
+      cp "${SD_BUILTIN}/ui-config.json" "${NAS_DIR}/ui-config.json"
+    fi 
+
+    show_cost_time "mount built-in files"
+
+
+    echo -n ${IMAGE_TAG_I} > /${NAS_DIR}/IMAGE_TAG
   fi
+fi
 
-  if [ "$(wc -c ${NAS_DIR}/config.json | cut -f 1 -d ' ')" == "0" ]; then
-    echo "config.json is empty, copy it"
-    rm -f "${SD_BUILTIN}/config.json"
-    cp "${SD_BUILTIN}/config.json" "${NAS_DIR}/config.json"
-  fi
 
-  if [ ! -e "${NAS_DIR}/ui-config.json" ]; then
-    echo "no ui-config.json, copy it"
-    cp "${SD_BUILTIN}/ui-config.json" "${NAS_DIR}/ui-config.json"
-  fi 
+if [ ! -e "${NAS_DIR}/config.json" ]; then
+  echo "no config.json, copy it"
+  cp "${SD_BUILTIN}/config.json" "${NAS_DIR}/config.json"
+fi
+
+if [ "$(wc -c ${NAS_DIR}/config.json | cut -f 1 -d ' ')" == "0" ]; then
+  echo "config.json is empty, copy it"
+  rm -f "${SD_BUILTIN}/config.json"
+  cp "${SD_BUILTIN}/config.json" "${NAS_DIR}/config.json"
 fi
 
 if [ ! -e "${NAS_DIR}/styles.csv" ]; then
@@ -87,6 +115,7 @@ MOUNTS["${ROOT}/ui-config.json"]="${NAS_DIR}/ui-config.json"
 MOUNTS["${ROOT}/extensions"]="${NAS_DIR}/extensions"
 MOUNTS["${ROOT}/outputs"]="${NAS_DIR}/outputs"
 MOUNTS["${ROOT}/styles.csv"]="${NAS_DIR}/styles.csv"
+# MOUNTS["${ROOT}/cache.json"]="${NAS_DIR}/cache.json"
 MOUNTS["${ROOT}/scripts"]="${NAS_DIR}/scripts"
 MOUNTS["${ROOT}/textual_inversion_templates"]="${NAS_DIR}/textual_inversion_templates"
 # MOUNTS["${ROOT}/javascript"]="${NAS_DIR}/javascript"
@@ -110,6 +139,7 @@ DISABLE_AGENT="${DISABLE_AGENT:-}"
 
 export ARGS="${CLI_ARGS} ${EXTRA_ARGS}"
 export PYTHONPATH="${PYTHONPATH:-}:${NAS_DIR}/python"
+export SD_WEBUI_CACHE_FILE="/mnt/auto/sd/cache.json"
 
 echo "args: $ARGS"
 
