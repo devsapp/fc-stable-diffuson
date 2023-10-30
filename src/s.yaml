@@ -9,7 +9,7 @@ vars:
   filemgrToken: "{{ filemgrToken || '' }}"
   extraArgs: "{{ extraArgs || '' }}{{ if webuiEnabled === false }} --nowebui{{/if}}{{ if webuiAuth !== '' && webuiAuth !== undefined }} --gradio-auth {{webuiAuth}}{{/if}}{{ if apiEnabled }} --api{{/if}}{{ if apiAuth !== '' && apiAuth !== undefined }} --api-auth {{apiAuth}}{{/if}}"
   enableCollect: "{{ enableCollect || '' }}"
-  filemgrFilename: "filemgr-1.2.1"
+  filemgrFilename: "filemgr-1.2.2"
   service:
     name: ${vars.serviceName}
     description: 'stable-diffusion 部署到函数计算'
