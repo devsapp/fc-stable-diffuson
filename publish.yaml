@@ -24,10 +24,10 @@ Parameters:
       default: 
       description: 创建应用所在的地区。由于当前模板涉及 Github 以及 HuggingFace 等网站访问，国内部分地区可能无法直接使用，推荐您选择海外地区进行部署
       enum:
+        - cn-hangzhou
         - ap-northeast-1
         - ap-southeast-1
         - cn-beijing
-        - cn-hangzhou
         - cn-shanghai
         - cn-shenzhen
     serviceName:
