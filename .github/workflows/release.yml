@@ -34,7 +34,7 @@ jobs:
           release_body: ${{ github.event.release.body }}
           release_name: ${{ github.event.release.name }}
         run: |
-          if [[ -e "${release_body}" ]]; then
+          if [[ ! -n "${release_body}" ]]; then
             TAG=$(git describe --tags --always | sed 's/^v//')
             echo "release ${TAG}"
 
