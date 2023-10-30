@@ -5,7 +5,7 @@ vars:
   region: "{{ region }}" 
   serviceName: "{{ serviceName }}"
   functionName: "{{ functionName }}" 
-  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v10{{ else if type === '真人风格'}}realman-v10{{else if type === '轻量版'}}lite-v2{{ else }}sd1.5-v10{{/if}}" 
+  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v11{{ else if type === '真人风格'}}realman-v11{{else if type === '轻量版'}}lite-v3{{ else }}sd1.5-v11{{/if}}" 
   filemgrToken: "{{ filemgrToken || '' }}"
   extraArgs: "{{ extraArgs || '' }}{{ if webuiEnabled === false }} --nowebui{{/if}}{{ if webuiAuth !== '' && webuiAuth !== undefined }} --gradio-auth {{webuiAuth}}{{/if}}{{ if apiEnabled }} --api{{/if}}{{ if apiAuth !== '' && apiAuth !== undefined }} --api-auth {{apiAuth}}{{/if}}"
   enableCollect: "{{ enableCollect || '' }}"
