@@ -283,7 +283,7 @@ RUN chmod 777 /docker/sd-agent
 FROM base as lite
 
 RUN --mount=type=bind,from=execute,source=/,target=/execute \
-    cp -R /execute/${SD_BUILTIN}/ /${SD_BUILTIN} && \
+    cp -R /execute/${SD_BUILTIN}/* ${SD_BUILTIN} && \
     cp -R /execute/docker/ /docker && \
     cp /execute/IMAGE_TAG /IMAGE_TAG
 
@@ -340,7 +340,7 @@ FROM model-base as sd1.5
 COPY --from=download_models  /sd-v1-5-inpainting.ckpt ${SD_BUILTIN}/models/Stable-diffusion/sd-v1-5-inpainting.ckpt
 
 RUN --mount=type=bind,from=execute,source=/,target=/execute \
-    cp -R /execute/${SD_BUILTIN}/ /${SD_BUILTIN} && \
+    cp -R /execute/${SD_BUILTIN}/* ${SD_BUILTIN} && \
     cp -R /execute/docker/ /docker && \
     cp /execute/IMAGE_TAG /IMAGE_TAG
 

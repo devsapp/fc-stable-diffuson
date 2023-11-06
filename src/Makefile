@@ -15,10 +15,10 @@ NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
 BASE_TAG=basev8
 
-SD15_VERSION=v11
-ANIME_VERSION=v11
-REALMAN_VERSION=v11
-LITE_VERSION=v3
+SD15_VERSION=v12
+ANIME_VERSION=v12
+REALMAN_VERSION=v12
+LITE_VERSION=v4
 
 
 push: push-jp push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
