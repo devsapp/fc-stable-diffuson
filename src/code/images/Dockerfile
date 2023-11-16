@@ -220,7 +220,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     ultralytics==8.0.145 py-cpuinfo protobuf==3.20 rembg==2.0.38 \
     deepdanbooru onnxruntime-gpu jsonschema opencv_contrib_python opencv_python opencv_python_headless packaging Pillow tqdm \
     chardet PyExecJS lxml pathos cryptography openai aliyun-python-sdk-core aliyun-python-sdk-alimt send2trash \
-    insightface==0.7.3 tensorflow ifnude && \
+    insightface==0.7.3 tensorflow ifnude diffusers["torch"] httpx==0.24.1 && \
     pip install xformers==0.0.20 taming-transformers-rom1504 && \
     pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
 

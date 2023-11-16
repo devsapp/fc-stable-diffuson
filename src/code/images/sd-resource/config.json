@@ -166,5 +166,8 @@
     "stable-diffusion-webui-dataset-tag-editor"
   ],
   "upscaling_max_images_in_cache": 5,
+  "extra_options_txt2img": [
+    "face_restoration"
+  ],
   "disable_mmap_load_safetensors": true
 }

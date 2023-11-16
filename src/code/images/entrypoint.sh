@@ -133,7 +133,7 @@ if [ -f "/mnt/auto/sd/startup.sh" ]; then
   popd
 fi
 
-CLI_ARGS="${CLI_ARGS:---xformers --enable-insecure-extension-access --skip-version-check --no-download-sd-model}"
+CLI_ARGS="${CLI_ARGS:---xformers --enable-insecure-extension-access --skip-version-check --no-download-sd-model --gradio-allowed-path=/}"
 EXTRA_ARGS="${EXTRA_ARGS:-}"
 DISABLE_AGENT="${DISABLE_AGENT:-}"
 

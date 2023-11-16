@@ -13,12 +13,12 @@ help: ## 帮助文件
 	
 NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
-BASE_TAG=basev8
+BASE_TAG=basev9
 
-SD15_VERSION=v12
-ANIME_VERSION=v12
-REALMAN_VERSION=v12
-LITE_VERSION=v4
+SD15_VERSION=v13
+ANIME_VERSION=v13
+REALMAN_VERSION=v13
+LITE_VERSION=v5
 
 
 push: push-jp push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
@@ -113,7 +113,7 @@ all-ap: build-base build push-base-ap push-ap
 all: all-ap push push-base 
 
 dev: build-anime  ## 使用动漫风格进行测试
-	docker run --rm -it --name=sd --net=host -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION}
+	docker run --rm -it --gpus=all --name=sd --net=host -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION}
 
 exec: ## 登入容器实例
 	docker exec -it sd /bin/bash
