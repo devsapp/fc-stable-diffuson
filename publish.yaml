@@ -1,19 +1,22 @@
-Type: Application
-Name: fc-stable-diffusion
+Edition: 3.0.0
+Type: Project
+Name: fc-stable-diffusion-v3
 Provider:
-  - 阿里云
+  - 阿里云 
 Version: dev
 Description: 使用serverless devs将stable-diffusion部署到阿里云函数计算上
 HomePage: https://github.com/OhYee/fc-stable-diffuson
-Tags: #标签详情
+Tags: 
   - 部署函数
 Category: Web框架
+Organization: 阿里云函数计算（FC）
+Effective: Public
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required: # 必填项
     - region
-    - serviceName
+    - namespace
     - functionName
     - type
     - enableCollect
@@ -30,11 +33,11 @@ Parameters:
         - cn-beijing
         - cn-shanghai
         - cn-shenzhen
-    serviceName:
-      title: 服务名
+    namespace:
+      title: 命名空间
       type: string
       default: fc-stable-diffusion
-      description: 您可以根据需要设置不同的服务名，同一个服务会共享部分第三方云产品资源
+      description: 命名空间将作为函数名的前缀，用以区分不同的 sd 应用，默认挂载的 nas 目录也取决于命名空间。
     functionName:
       title: 函数名
       type: string
