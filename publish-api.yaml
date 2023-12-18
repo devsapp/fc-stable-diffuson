@@ -61,6 +61,7 @@ Parameters:
         - 动漫风格
         - 真人风格
         - 轻量版
+        - TensorRT
     nasEnabled:
       title: 启用 NAS
       type: boolean

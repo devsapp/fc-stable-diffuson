@@ -55,6 +55,7 @@ Parameters:
         - 动漫风格
         - 真人风格
         - 轻量版
+        - TensorRT
     enableCollect:
       title: 协助改善体验
       type: boolean

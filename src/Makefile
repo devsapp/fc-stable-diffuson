@@ -13,12 +13,13 @@ help: ## 帮助文件
 	
 NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
-BASE_TAG=basev9
+BASE_TAG=basev10
 
-SD15_VERSION=v13
-ANIME_VERSION=v13
-REALMAN_VERSION=v13
-LITE_VERSION=v5
+SD15_VERSION=v14
+ANIME_VERSION=v14
+REALMAN_VERSION=v14
+LITE_VERSION=v6
+TENSORRT_VERSION=v1
 
 
 push: push-jp push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
@@ -39,7 +40,10 @@ build-realman: ## 构建真人风格
 build-lite: ## 构建 Lite 版本
 	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target lite --build-arg IMAGE_TAG=lite-${LITE_VERSION} -t stable-diffusion:lite-${LITE_VERSION} code/images/
 
-build: build-sd1.5 build-anime build-realman build-lite # 构建全部镜像
+build-tensorrt: ## 构建 TensorRT 版本
+	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target tensorrt --build-arg IMAGE_TAG=tensorrt-${TENSORRT_VERSION} -t stable-diffusion:tensorrt-${TENSORRT_VERSION} code/images/
+
+build: build-sd1.5 build-anime build-realman build-lite build-tensorrt # 构建全部镜像
 
 
 
@@ -49,42 +53,42 @@ push-base: ## 推送基础镜像
 
 push-beijing:  ## push 镜像到北京
 	IMAGE=registry.cn-beijing.aliyuncs.com/${NAMESPACE}/${REPO} && \
-	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}"; do \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
 push-shanghai:  ## push 镜像到上海
 	IMAGE=registry.cn-shanghai.aliyuncs.com/${NAMESPACE}/${REPO} && \
-	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}"; do \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
 push-shenzhen:  ## push 镜像到深圳
 	IMAGE=registry.cn-shenzhen.aliyuncs.com/${NAMESPACE}/${REPO} && \
-	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}"; do \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
 push-hangzhou:  ## push 镜像到杭州
 	IMAGE=registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO} && \
-	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}"; do \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
 push-ap: build ## push 镜像到新加坡
 	IMAGE=registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO} && \
-	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}"; do \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
 
 push-jp:
 	IMAGE=registry.ap-northeast-1.aliyuncs.com/${NAMESPACE}/${REPO} && \
-	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}"; do \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
 	done
@@ -97,7 +101,7 @@ sync-from-ap: ## 同步新加坡镜像到其他 region
 	docker pull registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
 	docker tag  registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
 	docker push registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
-	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}"; do \
+	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}"; do \
 		for region in "cn-hangzhou" "cn-beijing" "cn-shanghai" "cn-shenzhen" "ap-northeast-1"; do \
 			docker pull registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && \
 			docker tag registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} registry.$${region}.aliyuncs.com/${NAMESPACE}/${REPO}:$${tag} && \
@@ -113,7 +117,10 @@ all-ap: build-base build push-base-ap push-ap
 all: all-ap push push-base 
 
 dev: build-anime  ## 使用动漫风格进行测试
-	docker run --rm -it --gpus=all --name=sd --net=host -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION}
+	docker run --rm -it --gpus=all --name=sd --net=host -e EXTRA_ARGS="--api" -e CHECK_MODEL_LOAD=1 -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION}
+
+shell: build-anime  ## 使用动漫风格进行测试
+	docker run --rm -it --gpus=all --name=sd --net=host -e EXTRA_ARGS="--api" -e CHECK_MODEL_LOAD=1 --entrypoint="" -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION} /bin/bash
 
 exec: ## 登入容器实例
 	docker exec -it sd /bin/bash

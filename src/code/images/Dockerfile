@@ -106,6 +106,11 @@ RUN . /clone.sh /extensions/stable-diffusion-webui-wd14-tagger https://github.co
 # sdweb-easy-prompt-selector 提示词选择
 COPY ./sd-resource/extensions/sdweb-easy-prompt-selector /extensions/sdweb-easy-prompt-selector
 
+# Stable-Diffusion-WebUI-TensorRT 
+RUN . /clone.sh /extensions/Stable-Diffusion-WebUI-TensorRT https://github.com/NVIDIA/Stable-Diffusion-WebUI-TensorRT.git 4c2bcafd854f7bc74d3ca9c5c3c90112e9fe6e55 && \
+    cd /extensions/Stable-Diffusion-WebUI-TensorRT && \
+    rm -rf *.md .gitignore
+
 
 ############################# 
 #     sdwebui 需要的模型    #
@@ -185,7 +190,7 @@ RUN mkdir -p /models--Bingsu--adetailer && python /init/bingsu-adetailer.py /mod
 #       基础 sd 镜像        #
 #############################
 
-FROM python:3.10.9-slim as sdwebui
+FROM python:3.10.13-slim as sdwebui
 
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
@@ -200,7 +205,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     apt install -y --no-install-recommends \
     wget git fonts-dejavu-core rsync git jq moreutils aria2 \
     ffmpeg libglfw3-dev libgles2-mesa-dev pkg-config libcairo2 libcairo2-dev \
-    libpython3.9-dev gcc g++ procps unzip curl
+    libpython3-dev gcc g++ procps unzip curl
 
 ENV SHA=v1.6.0
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /stable-diffusion-webui && \
@@ -213,7 +218,7 @@ RUN --mount=type=bind,from=repositories,source=/repositories,target=/repositorie
 
 # 其他必备的依赖
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --upgrade pip && \
+    python3 -m pip install --upgrade pip && \
     pip install -r ${ROOT}/requirements_versions.txt && \
     find ${ROOT}/repositories -name requirements.txt | xargs -I {} pip install -r {} || echo "failed" && \
     pip install rich==13.4.2 numexpr matplotlib pandas av pims imageio_ffmpeg gdown mediapipe==0.10.2 \
@@ -221,8 +226,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     deepdanbooru onnxruntime-gpu jsonschema opencv_contrib_python opencv_python opencv_python_headless packaging Pillow tqdm \
     chardet PyExecJS lxml pathos cryptography openai aliyun-python-sdk-core aliyun-python-sdk-alimt send2trash \
     insightface==0.7.3 tensorflow ifnude diffusers["torch"] httpx==0.24.1 && \
-    pip install xformers==0.0.20 taming-transformers-rom1504 && \
-    pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
+    pip install torch==2.1.1+cu121 torchvision==0.16.1+cu121 --index-url https://download.pytorch.org/whl/cu121 && \
+    pip install xformers taming-transformers-rom1504
 
 # fix using lora in only api mode 
 # COPY ./fix.diff ${ROOT}/fix.diff
@@ -288,6 +293,28 @@ RUN --mount=type=bind,from=execute,source=/,target=/execute \
     cp /execute/IMAGE_TAG /IMAGE_TAG
 
 ############################# 
+#         TensorRT          #
+#############################
+
+FROM base as tensorRT
+
+RUN python -m pip install nvidia-cudnn-cu11==8.9.4.25  nvidia-cudnn-cu11 && \
+    python -m pip install install --pre --extra-index-url https://pypi.nvidia.com tensorrt==9.0.1.post11.dev4 --no-cache-dir tensorrt && \
+    python -m pip uninstall -y nvidia-cudnn-cu11 && \
+    python -m pip install polygraphy --extra-index-url https://pypi.ngc.nvidia.com && \
+    python -m pip install onnx-graphsurgeon --extra-index-url https://pypi.ngc.nvidia.com
+
+RUN --mount=type=bind,from=extensions,source=/extensions,target=/extensions \
+    mkdir -p ${SD_BUILTIN}/extensions/ && \
+    cp -R /extensions/Stable-Diffusion-WebUI-TensorRT ${SD_BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT
+    
+RUN --mount=type=bind,from=execute,source=/,target=/execute \
+    cp -R /execute/${SD_BUILTIN}/* ${SD_BUILTIN} && \
+    cp -R /execute/docker/ /docker && \
+    cp /execute/IMAGE_TAG /IMAGE_TAG
+
+
+############################# 
 #         内置模型          #
 #############################
 
@@ -296,7 +323,8 @@ FROM base as model-base
 # 内置插件
 RUN --mount=type=bind,from=extensions,source=/extensions,target=/extensions \
     mkdir -p ${SD_BUILTIN}/extensions/ && \
-    cp -R /extensions/* ${SD_BUILTIN}/extensions/
+    cp -R /extensions/* ${SD_BUILTIN}/extensions/ && \
+    rm -rf ${SD_BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT
 
 # 中文提示词翻译 299M
 COPY --from=download_huggingface /sd-prompt-translator  ${SD_BUILTIN}/extensions/sd-prompt-translator/scripts/models

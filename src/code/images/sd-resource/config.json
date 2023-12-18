@@ -163,11 +163,13 @@
     "stable-diffusion-webui-images-browser",
     "stable-diffusion-webui-rembg",
     "stable-diffusion-webui-wd14-tagger",
-    "stable-diffusion-webui-dataset-tag-editor"
+    "stable-diffusion-webui-dataset-tag-editor",
+    "sd-prompt-translator"
   ],
   "upscaling_max_images_in_cache": 5,
   "extra_options_txt2img": [
     "face_restoration"
   ],
+  "face_restoration": false,
   "disable_mmap_load_safetensors": true
 }
