@@ -1,5 +1,7 @@
 node_modules
 .s
 .DS_Store
+src/code/filemgr
+src/code/filemgr.zip
 
 nas

@@ -107,9 +107,7 @@ RUN . /clone.sh /extensions/stable-diffusion-webui-wd14-tagger https://github.co
 COPY ./sd-resource/extensions/sdweb-easy-prompt-selector /extensions/sdweb-easy-prompt-selector
 
 # Stable-Diffusion-WebUI-TensorRT 
-RUN . /clone.sh /extensions/Stable-Diffusion-WebUI-TensorRT https://github.com/NVIDIA/Stable-Diffusion-WebUI-TensorRT.git 4c2bcafd854f7bc74d3ca9c5c3c90112e9fe6e55 && \
-    cd /extensions/Stable-Diffusion-WebUI-TensorRT && \
-    rm -rf *.md .gitignore
+RUN . /clone.sh /extensions/Stable-Diffusion-WebUI-TensorRT https://github.com/NVIDIA/Stable-Diffusion-WebUI-TensorRT.git 4c2bcafd854f7bc74d3ca9c5c3c90112e9fe6e55
 
 
 ############################# 
@@ -302,12 +300,15 @@ RUN python -m pip install nvidia-cudnn-cu11==8.9.4.25  nvidia-cudnn-cu11 && \
     python -m pip install install --pre --extra-index-url https://pypi.nvidia.com tensorrt==9.0.1.post11.dev4 --no-cache-dir tensorrt && \
     python -m pip uninstall -y nvidia-cudnn-cu11 && \
     python -m pip install polygraphy --extra-index-url https://pypi.ngc.nvidia.com && \
-    python -m pip install onnx-graphsurgeon --extra-index-url https://pypi.ngc.nvidia.com
+    python -m pip install onnx-graphsurgeon --extra-index-url https://pypi.ngc.nvidia.com && \
+    python -m pip install nvidia-tensorrt
+
+RUN ln -s /usr/local/lib/python3.10/site-packages/nvidia/cuda_runtime/lib/libcudart.so.11.0 /usr/local/lib/libcudart.so.11.0 
 
 RUN --mount=type=bind,from=extensions,source=/extensions,target=/extensions \
     mkdir -p ${SD_BUILTIN}/extensions/ && \
-    cp -R /extensions/Stable-Diffusion-WebUI-TensorRT ${SD_BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT
-    
+    cp -R /extensions/Stable-Diffusion-WebUI-TensorRT ${SD_BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT2
+
 RUN --mount=type=bind,from=execute,source=/,target=/execute \
     cp -R /execute/${SD_BUILTIN}/* ${SD_BUILTIN} && \
     cp -R /execute/docker/ /docker && \
