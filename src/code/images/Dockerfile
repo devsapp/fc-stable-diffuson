@@ -168,6 +168,37 @@ RUN aria2c -x 16 --dir "/" --out "blingdbox_v1_mix.safetensors" "https://civitai
 RUN aria2c -x 16 --dir "/" --out "GachaSpliash4.safetensors" "https://civitai.com/api/download/models/38884?type=Model&format=SafeTensor" 
 RUN aria2c -x 16 --dir "/" --out "Colorwater_v4.safetensors" "https://civitai.com/api/download/models/21173?type=Model&format=SafeTensor&size=full&fp=fp16" 
 
+
+
+############################# 
+#       sd-agent 构建       #
+#############################
+
+FROM golang:1.21 as serverless-stable-diffusion-api
+
+RUN go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
+
+RUN mkdir -p /code && \
+    git clone https://github.com/devsapp/serverless-stable-diffusion-api.git /code && \
+    cd /code && \
+    git checkout 9f10809b98207f89e6a71ae91480295b710a6a41
+
+WORKDIR /code
+
+RUN go get ./... && \
+    go get github.com/oapi-codegen/runtime && \
+    go get github.com/getkin/kin-openapi/openapi3 && \
+    go get golang.org/x/text/language 
+
+
+# /code/build/agent/agentServer
+RUN make build-agent 
+
+# /code/build/proxy/proxyServer
+RUN make build-proxy
+
+
+
 ############################# 
 #   插件从 hf 下载的模型    #
 #############################
@@ -224,12 +255,12 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     deepdanbooru onnxruntime-gpu jsonschema opencv_contrib_python opencv_python opencv_python_headless packaging Pillow tqdm \
     chardet PyExecJS lxml pathos cryptography openai aliyun-python-sdk-core aliyun-python-sdk-alimt send2trash \
     insightface==0.7.3 tensorflow ifnude diffusers["torch"] httpx==0.24.1 && \
-    pip install torch==2.1.1+cu121 torchvision==0.16.1+cu121 --index-url https://download.pytorch.org/whl/cu121 && \
-    pip install xformers taming-transformers-rom1504
+    pip install xformers==0.0.20 taming-transformers-rom1504 && \
+    pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
 
-# fix using lora in only api mode 
-# COPY ./fix.diff ${ROOT}/fix.diff
-# RUN cd ${ROOT} && git apply --whitespace=fix  fix.diff
+# pip install torch==2.1.1+cu121 torchvision==0.16.1+cu121 --index-url https://download.pytorch.org/whl/cu121 && \
+# pip install xformers taming-transformers-rom1504
+
 
 FROM sdwebui as base
 
@@ -276,8 +307,8 @@ RUN --mount=type=bind,from=sdwebui,source=/,target=/sdwebui \
 RUN sed -i ${SD_BUILTIN}/ui-config.json -e 's@"txt2img/Prompt/value": ""@"txt2img/Prompt/value": "masterpiece, best quality, very detailed, extremely detailed beautiful, super detailed, tousled hair, illustration, dynamic angles, girly, fashion clothing, standing, mannequin, looking at viewer, interview, beach, beautiful detailed eyes, exquisitely beautiful face, floating, high saturation, beautiful and detailed light and shadow"@'
 RUN sed -i ${SD_BUILTIN}/ui-config.json -e 's@"txt2img/Negative prompt/value": ""@"txt2img/Negative prompt/value": "loli,nsfw,logo,text,badhandv4,EasyNegative,ng_deepnegative_v1_75t,rev2-badprompt,verybadimagenegative_v1.3,negative_hand-neg,mutated hands and fingers,poorly drawn face,extra limb,missing limb,disconnected limbs,malformed hands,ugly"@'
 
-COPY ./config.json ./entrypoint.sh ./info.py ./sd-agent /docker/
-RUN chmod 777 /docker/sd-agent
+COPY ./config.json ./entrypoint.sh ./info.py /docker/
+COPY --from=serverless-stable-diffusion-api /code/build/agent/agentServer /docker/sd-agent
 
 ############################# 
 #      最小可运行版本       #
@@ -296,18 +327,18 @@ RUN --mount=type=bind,from=execute,source=/,target=/execute \
 
 FROM base as tensorRT
 
-RUN python -m pip install nvidia-cudnn-cu11==8.9.4.25  nvidia-cudnn-cu11 && \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python -m pip install nvidia-cudnn-cu11==8.9.4.25  nvidia-cudnn-cu11 && \
     python -m pip install install --pre --extra-index-url https://pypi.nvidia.com tensorrt==9.0.1.post11.dev4 --no-cache-dir tensorrt && \
     python -m pip uninstall -y nvidia-cudnn-cu11 && \
     python -m pip install polygraphy --extra-index-url https://pypi.ngc.nvidia.com && \
     python -m pip install onnx-graphsurgeon --extra-index-url https://pypi.ngc.nvidia.com && \
     python -m pip install nvidia-tensorrt
 
-RUN ln -s /usr/local/lib/python3.10/site-packages/nvidia/cuda_runtime/lib/libcudart.so.11.0 /usr/local/lib/libcudart.so.11.0 
 
 RUN --mount=type=bind,from=extensions,source=/extensions,target=/extensions \
     mkdir -p ${SD_BUILTIN}/extensions/ && \
-    cp -R /extensions/Stable-Diffusion-WebUI-TensorRT ${SD_BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT2
+    cp -R /extensions/Stable-Diffusion-WebUI-TensorRT ${SD_BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT
 
 RUN --mount=type=bind,from=execute,source=/,target=/execute \
     cp -R /execute/${SD_BUILTIN}/* ${SD_BUILTIN} && \

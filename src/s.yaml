@@ -10,7 +10,7 @@ vars:
   enableCollect: "{{ enableCollect || '' }}"
   filemgrFilename: "filemgr-1.2.2"
   roleArn: "{{roleArn}}"
-  extraArgs: " "
+  extraArgs: ""
 
 resources:
   sd:
@@ -47,6 +47,7 @@ resources:
     actions: 
       pre-deploy:
         - run: |
+            mkdir -p code && \
             cd code && \
             curl http://serverless-tool-images.oss-cn-hangzhou.aliyuncs.com/aigc/filemgr/${vars.filemgrFilename}.zip -o filemgr.zip && \
             unzip -o filemgr.zip && \
@@ -64,6 +65,7 @@ resources:
       diskSize: 512
       instanceConcurrency: 16
       caPort: 9000
+      role: ${vars.roleArn}
       customRuntimeConfig:
         command:
           - ./server

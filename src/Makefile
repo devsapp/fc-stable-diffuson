@@ -117,10 +117,39 @@ all-ap: build-base build push-base-ap push-ap
 all: all-ap push push-base 
 
 dev: build-anime  ## 使用动漫风格进行测试
-	docker run --rm -it --gpus=all --name=sd --net=host -e EXTRA_ARGS="--api" -e CHECK_MODEL_LOAD=1 -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION}
+	@eval $(shell for l in $(shell cat .env | grep -v '#'); do echo export $$l; done) && \
+	if [ -z "$${FC_REGION}" ] || [ -z "$${FC_ACCOUNT_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_SECRET}" ]; then \
+		then echo "Please set FC_REGION, FC_ACCOUNT_ID, ALIBABA_CLOUD_ACCESS_KEY_ID, ALIBABA_CLOUD_ACCESS_KEY_SECRET in .env"; \
+	fi && \
+	docker run --rm -it --gpus=all --name=sd --net=host \
+		-e EXTRA_ARGS="--api" \
+		-e CHECK_MODEL_LOAD=1 \
+		-e FC_REGION=$$FC_REGION \
+		-e FC_ACCOUNT_ID=$$FC_ACCOUNT_ID \
+		-e ALIBABA_CLOUD_ACCESS_KEY_ID=$$ALIBABA_CLOUD_ACCESS_KEY_ID \
+		-e ALIBABA_CLOUD_ACCESS_KEY_SECRET=$$ALIBABA_CLOUD_ACCESS_KEY_SECRET \
+		-v ${shell pwd}/nas:/mnt/auto \
+		stable-diffusion:anime-${ANIME_VERSION}
 
-shell: build-anime  ## 使用动漫风格进行测试
-	docker run --rm -it --gpus=all --name=sd --net=host -e EXTRA_ARGS="--api" -e CHECK_MODEL_LOAD=1 --entrypoint="" -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION} /bin/bash
+
+dev-tensorrt: build-tensorrt  ## 使用 TensorRT 进行测试
+	@eval $(shell for l in $(shell cat .env | grep -v '#'); do echo export $$l; done) && \
+	if [ -z "$${FC_REGION}" ] || [ -z "$${FC_ACCOUNT_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_SECRET}" ]; then \
+		echo "Please set FC_REGION, FC_ACCOUNT_ID, ALIBABA_CLOUD_ACCESS_KEY_ID, ALIBABA_CLOUD_ACCESS_KEY_SECRET in .env"; exit 1; \
+	fi && \
+	docker run --rm -it --gpus=all --name=sd --net=host \
+		-e EXTRA_ARGS="--api" \
+		-e CHECK_MODEL_LOAD=1 \
+		-e FC_REGION=$$FC_REGION \
+		-e FC_ACCOUNT_ID=$$FC_ACCOUNT_ID \
+		-e ALIBABA_CLOUD_ACCESS_KEY_ID=$$ALIBABA_CLOUD_ACCESS_KEY_ID \
+		-e ALIBABA_CLOUD_ACCESS_KEY_SECRET=$$ALIBABA_CLOUD_ACCESS_KEY_SECRET \
+		-v ${shell pwd}/nas:/mnt/auto \
+		stable-diffusion:tensorrt-${TENSORRT_VERSION}
+
+
+shell: build-anime  ## 登入 sd shell 环境
+	docker run --rm -it --gpus=all --name=sd --net=host --entrypoint="" -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION} /bin/bash
 
 exec: ## 登入容器实例
 	docker exec -it sd /bin/bash

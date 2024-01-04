@@ -144,7 +144,7 @@ export SD_WEBUI_CACHE_FILE="/mnt/auto/sd/cache.json"
 echo "args: $ARGS"
 
 if [ -z "$DISABLE_AGENT" ]; then
-  /docker/sd-agent python -u webui.py --listen --port 7861 ${ARGS}
+  /docker/sd-agent -port=7860 -dbType=tableStore -sd="python -u webui.py --listen --port 7861 ${ARGS}"
 else 
   python -u webui.py --listen --port 7860 ${ARGS}
 fi
