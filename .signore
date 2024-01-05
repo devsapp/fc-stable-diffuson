@@ -1,5 +1,10 @@
+.git
 .github
 hook
+
 src/nas
 nas
-src/code
+
+src/code/images
+src/code/filemgr
+src/code/filemgr.zip

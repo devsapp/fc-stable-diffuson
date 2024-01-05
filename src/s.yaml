@@ -2,10 +2,10 @@ edition: 3.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic V
 name: fc-stable-diffusion
 access: default
 vars:
-  region: "{{ region }}" 
+  region: "{{ region }}"
   prefix: "{{namespace}}"
-  functionName: "{{ functionName }}" 
-  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v14{{ else if type === '真人风格'}}realman-v14{{else if type === '轻量版'}}lite-v6{{else if type === 'TensorRT'}}tensorrt-v1{{ else }}sd1.5-v14{{/if}}" 
+  functionName: "{{ functionName }}"
+  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v14{{ else if type === '真人风格'}}realman-v14{{else if type === '轻量版'}}lite-v6{{else if type === 'TensorRT'}}tensorrt-v1{{ else }}sd1.5-v14{{/if}}"
   filemgrToken: "{{ filemgrToken || '' }}"
   enableCollect: "{{ enableCollect || '' }}"
   filemgrFilename: "filemgr-1.2.2"
@@ -15,8 +15,8 @@ vars:
 resources:
   sd:
     component: fc3
-    actions: 
-      post-deploy: 
+    actions:
+      post-deploy:
         - component: fc ondemand put --qualifier LATEST --max 1
     props:
       region: ${vars.region}
@@ -24,9 +24,8 @@ resources:
       description: Stable Diffusion WebUI 函数
       handler: index.handler
       role: ${vars.roleArn}
-      timeout: 600
+      timeout: 7200
       diskSize: 512
-      caPort: 7860
       gpuConfig:
         gpuMemorySize: 16384
         gpuType: fc.gpu.tesla.1
@@ -36,6 +35,7 @@ resources:
         accelerationType: Default
         image: ${vars.imageUrl}
         webServerMode: true
+        port: 7860
       instanceConcurrency: 100
       memorySize: 32768
       environmentVariables:
@@ -44,7 +44,7 @@ resources:
 
   filemgr:
     component: fc3
-    actions: 
+    actions:
       pre-deploy:
         - run: |
             mkdir -p code && \
@@ -56,19 +56,19 @@ resources:
     props:
       region: ${vars.region}
       functionName: "${vars.prefix}__admin"
-      description: '模型管理辅助工具'
-      code: './code/filemgr'
+      description: "模型管理辅助工具"
+      code: "./code/filemgr"
       runtime: custom
       timeout: 7200
       memorySize: 3072
       cpu: 2.0
       diskSize: 512
-      instanceConcurrency: 16
-      caPort: 9000
+      instanceConcurrency: 100
       role: ${vars.roleArn}
       customRuntimeConfig:
         command:
           - ./server
+        port: 9000
       environmentVariables:
         TOKEN: "${vars.filemgrToken}"
         ENABLE_COLLECT: "${vars.enableCollect}"
@@ -78,11 +78,96 @@ resources:
       layers:
         - "acs:fc:${vars.region}:official:layers/ServerlessDevs/versions/1"
         - "acs:fc:${vars.region}:official:layers/Python310/versions/2"
+      triggers:
+        - triggerName: httpTrigger
+          triggerType: http
+          qualifier: LATEST
+          triggerConfig:
+            authType: anonymous
+            disableURLInternet: false
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+
+  controller:
+    component: fc3
+    props:
+      region: ${vars.region}
+      functionName: "${vars.prefix}__controller"
+      description: "Serverless Stable Diffusion API 控制函数"
+      code: "./code/serverless-stable-diffusion-api"
+      runtime: custom
+      timeout: 7200
+      memorySize: 1024
+      cpu: 1.0
+      diskSize: 512
+      instanceConcurrency: 10
+      role: ${vars.roleArn}
+      customRuntimeConfig:
+        command:
+          - ./proxy
+        port: 7860
+      environmentVariables:
+        SERVER_NAME: "control"
+        OTS_ENDPOINT: ""
+        OTS_INSTANCE: ""
+
+      triggers:
+        - triggerName: httpTrigger
+          triggerType: http
+          qualifier: LATEST
+          triggerConfig:
+            authType: anonymous
+            disableURLInternet: true
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+
+  proxy:
+    component: fc3
+    props:
+      region: ${vars.region}
+      functionName: "${vars.prefix}__proxy"
+      description: "Serverless Stable Diffusion API 网关函数"
+      code: "./code/serverless-stable-diffusion-api"
+      runtime: custom
+      timeout: 7200
+      memorySize: 1024
+      cpu: 1.0
+      diskSize: 512
+      instanceConcurrency: 100
+      role: ${vars.roleArn}
+      customRuntimeConfig:
+        command:
+          - ./proxy
+        port: 7860
+      environmentVariables:
+        SERVER_NAME: "proxy"
+        DOWNSTREAM: "${resources.controller.output.url.system_intranet_url}"
+        OTS_ENDPOINT: ""
+        OTS_INSTANCE: ""
+      
+      triggers:
+        - triggerName: httpTrigger
+          triggerType: http
+          qualifier: LATEST
+          triggerConfig:
+            authType: anonymous
+            disableURLInternet: false
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
 
   custom-domain-sd:
     component: fc3-domain
     props: #  组件的属性值
-      region: ${vars.region} 
+      region: ${vars.region}
       domainName: auto
       protocol: HTTP
       routeConfig:
@@ -97,18 +182,35 @@ resources:
             qualifier: LATEST
 
   custom-domain-filemgr:
-      component: fc3-domain
-      props: #  组件的属性值
-        region: ${vars.region} 
-        domainName: auto
-        protocol: HTTP
-        routeConfig:
-          routes:
-            - functionName: ${resources.filemgr.props.functionName}
-              methods:
-                - GET
-                - POST
-                - PUT
-                - DELETE
-              path: /*
-              qualifier: LATEST
+    component: fc3-domain
+    props: #  组件的属性值
+      region: ${vars.region}
+      domainName: auto
+      protocol: HTTP
+      routeConfig:
+        routes:
+          - functionName: ${resources.filemgr.props.functionName}
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            path: /*
+            qualifier: LATEST
+
+  custom-domain-proxy:
+    component: fc3-domain
+    props: #  组件的属性值
+      region: ${vars.region}
+      domainName: auto
+      protocol: HTTP
+      routeConfig:
+        routes:
+          - functionName: ${resources.proxy.props.functionName}
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            path: /*
+            qualifier: LATEST

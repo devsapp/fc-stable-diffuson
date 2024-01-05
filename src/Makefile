@@ -119,7 +119,7 @@ all: all-ap push push-base
 dev: build-anime  ## 使用动漫风格进行测试
 	@eval $(shell for l in $(shell cat .env | grep -v '#'); do echo export $$l; done) && \
 	if [ -z "$${FC_REGION}" ] || [ -z "$${FC_ACCOUNT_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_SECRET}" ]; then \
-		then echo "Please set FC_REGION, FC_ACCOUNT_ID, ALIBABA_CLOUD_ACCESS_KEY_ID, ALIBABA_CLOUD_ACCESS_KEY_SECRET in .env"; \
+		echo "Please set FC_REGION, FC_ACCOUNT_ID, ALIBABA_CLOUD_ACCESS_KEY_ID, ALIBABA_CLOUD_ACCESS_KEY_SECRET in .env"; \
 	fi && \
 	docker run --rm -it --gpus=all --name=sd --net=host \
 		-e EXTRA_ARGS="--api" \
@@ -153,3 +153,16 @@ shell: build-anime  ## 登入 sd shell 环境
 
 exec: ## 登入容器实例
 	docker exec -it sd /bin/bash
+
+
+build-proxy: ## 构建 Serverless Stable Diffusion API Proxy 二进制文件
+	mkdir -p ./code/serverless-stable-diffusion-api && \
+	DOCKER_BUILDKIT=1 docker build -f code/images/Dockerfile --target serverless-stable-diffusion-api -t serverless-stable-diffusion-api:builder code/images && \
+	docker create --name proxy-builder serverless-stable-diffusion-api:builder && \
+	docker cp proxy-builder:/code/build/proxy/proxyServer ./code/serverless-stable-diffusion-api/proxy && \
+	docker rm proxy-builder
+
+
+registry: ## 发布到 Serverless Devs Registry
+	cd .. && \
+	s registry publish
