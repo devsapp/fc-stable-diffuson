@@ -1,6 +1,6 @@
 edition: 3.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
 name: fc-stable-diffusion
-access: default
+access: "{{ access }}"
 vars:
   region: "{{ region }}"
   prefix: "{{namespace}}"
@@ -8,7 +8,7 @@ vars:
   imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v14{{ else if type === '真人风格'}}realman-v14{{else if type === '轻量版'}}lite-v6{{else if type === 'TensorRT'}}tensorrt-v1{{ else }}sd1.5-v14{{/if}}"
   filemgrToken: "{{ filemgrToken || '' }}"
   enableCollect: "{{ enableCollect || '' }}"
-  filemgrFilename: "filemgr-1.2.2"
+  filemgrFilename: "filemgr-1b1093b"
   roleArn: "{{roleArn}}"
   extraArgs: ""
 
@@ -16,10 +16,13 @@ resources:
   sd:
     component: fc3
     actions:
-      post-deploy:
-        - component: fc ondemand put --qualifier LATEST --max 1
+      success-deploy:
+        - run: |
+            s cli fc3 concurrency put --reserved-concurrency 1 --region ${this.props.region} --function-name ${this.props.functionName} -a {{ access }}
+          path: ./
+        # - component: fc3 concurrency put --reserved-concurrency 1
     props:
-      region: ${vars.region}
+      region: "${vars.region}"
       functionName: "${vars.prefix}__${vars.functionName}"
       description: Stable Diffusion WebUI 函数
       handler: index.handler
@@ -36,6 +39,8 @@ resources:
         image: ${vars.imageUrl}
         webServerMode: true
         port: 7860
+        entrypoint:
+          - /docker/entrypoint.sh
       instanceConcurrency: 100
       memorySize: 32768
       environmentVariables:
@@ -90,12 +95,19 @@ resources:
               - POST
               - PUT
               - DELETE
+              - OPTIONS
 
-  controller:
+  control:
     component: fc3
+    actions:
+      success-deploy:
+        - run: |
+            s cli fc3 concurrency put --reserved-concurrency 1 --region ${this.props.region} --function-name ${this.props.functionName} -a {{ access }}
+          path: ./
+        # - component: fc3 concurrency put --reserved-concurrency 1
     props:
       region: ${vars.region}
-      functionName: "${vars.prefix}__controller"
+      functionName: "${vars.prefix}__control"
       description: "Serverless Stable Diffusion API 控制函数"
       code: "./code/serverless-stable-diffusion-api"
       runtime: custom
@@ -113,6 +125,7 @@ resources:
         SERVER_NAME: "control"
         OTS_ENDPOINT: ""
         OTS_INSTANCE: ""
+        EXTRA_ARGS: "--nowebui --api"
 
       triggers:
         - triggerName: httpTrigger
@@ -147,10 +160,10 @@ resources:
         port: 7860
       environmentVariables:
         SERVER_NAME: "proxy"
-        DOWNSTREAM: "${resources.controller.output.url.system_intranet_url}"
+        DOWNSTREAM: "${resources.control.output.url.system_intranet_url}"
         OTS_ENDPOINT: ""
         OTS_INSTANCE: ""
-      
+
       triggers:
         - triggerName: httpTrigger
           triggerType: http
@@ -163,6 +176,7 @@ resources:
               - POST
               - PUT
               - DELETE
+              - OPTIONS
 
   custom-domain-sd:
     component: fc3-domain
@@ -178,6 +192,7 @@ resources:
               - POST
               - PUT
               - DELETE
+              - OPTIONS
             path: /*
             qualifier: LATEST
 
@@ -195,6 +210,7 @@ resources:
               - POST
               - PUT
               - DELETE
+              - OPTIONS
             path: /*
             qualifier: LATEST
 
@@ -212,5 +228,6 @@ resources:
               - POST
               - PUT
               - DELETE
+              - OPTIONS
             path: /*
             qualifier: LATEST

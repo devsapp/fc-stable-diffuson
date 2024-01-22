@@ -168,6 +168,21 @@ RUN aria2c -x 16 --dir "/" --out "blingdbox_v1_mix.safetensors" "https://civitai
 RUN aria2c -x 16 --dir "/" --out "GachaSpliash4.safetensors" "https://civitai.com/api/download/models/38884?type=Model&format=SafeTensor" 
 RUN aria2c -x 16 --dir "/" --out "Colorwater_v4.safetensors" "https://civitai.com/api/download/models/21173?type=Model&format=SafeTensor&size=full&fp=fp16" 
 
+############################# 
+#          内置模型         #
+#############################
+
+FROM python:3.10.9-slim as download_models_character
+
+RUN apt update && apt install -y aria2
+
+RUN aria2c -x 16 --dir "/" --out "revAnimatedV1.2.2.safetensors" "https://civitai.com/api/download/models/156202?type=Model&format=SafeTensor&size=full&fp=fp16" 
+RUN aria2c -x 16 --dir "/" --out "3dlongbaobao.safetensors" "https://serverless-tool-images.oss-cn-hangzhou.aliyuncs.com/aigc/json/fc-ai-character/3dlongbaobao.safetensors" 
+RUN aria2c -x 16 --dir "/" --out "longyinshaonian.safetensors" "https://serverless-tool-images.oss-cn-hangzhou.aliyuncs.com/aigc/json/fc-ai-character/longyinshaonian.safetensors" 
+RUN aria2c -x 16 --dir "/" --out "wushishaonian.safetensors" "https://serverless-tool-images.oss-cn-hangzhou.aliyuncs.com/aigc/json/fc-ai-character/wushishaonian.safetensors" 
+RUN aria2c -x 16 --dir "/" --out "xiaolongnv.safetensors" "https://serverless-tool-images.oss-cn-hangzhou.aliyuncs.com/aigc/json/fc-ai-character/xiaolongnv.safetensors" 
+RUN aria2c -x 16 --dir "/" --out "xiaolongnv.safetensors" "https://serverless-tool-images.oss-cn-hangzhou.aliyuncs.com/aigc/json/fc-ai-character/xiaolongnv.safetensors" 
+RUN aria2c -x 16 --dir "/" --out "control_v11f1e_sd15_tile.pth" "https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/main/control_v11f1e_sd15_tile.pth?download=true" 
 
 
 ############################# 
@@ -181,7 +196,7 @@ RUN go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
 RUN mkdir -p /code && \
     git clone https://github.com/devsapp/serverless-stable-diffusion-api.git /code && \
     cd /code && \
-    git checkout 9f10809b98207f89e6a71ae91480295b710a6a41
+    git checkout 0e60836b53556e6dffa84015896de09c8cb03d20
 
 WORKDIR /code
 
@@ -439,3 +454,25 @@ RUN --mount=type=bind,from=execute,source=/,target=/execute \
 
 RUN sed -i ${SD_BUILTIN}/config.json -e 's@sd-v1-5-inpainting.ckpt \[c6bbc15e32\]@chilloutmix_NiPrunedFp16Fix.safetensors \[59ffe2243a\]@'
 RUN sed -i ${SD_BUILTIN}/config.json -e 's@c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19@59ffe2243a25c9fe137d590eb3c5c3d3273f1b4c86252da11bbdc9568773da0c@'
+
+
+############################# 
+#         艺术字版本        #
+#############################
+
+FROM model-base as character
+
+COPY --from=download_models_character /revAnimatedV1.2.2.safetensors        ${SD_BUILTIN}/models/Stable-diffusion/revAnimatedV1.2.2.safetensors
+COPY --from=download_models_character /3dlongbaobao.safetensors             ${SD_BUILTIN}/models/Lora/3dlongbaobao.safetensors
+COPY --from=download_models_character /longyinshaonian.safetensors          ${SD_BUILTIN}/models/Lora/longyinshaonian.safetensors
+COPY --from=download_models_character /wushishaonian.safetensors            ${SD_BUILTIN}/models/Lora/wushishaonian.safetensors
+COPY --from=download_models_character /xiaolongnv.safetensors               ${SD_BUILTIN}/models/Lora/xiaolongnv.safetensors
+COPY --from=download_models_character /control_v11f1e_sd15_tile.pth         ${SD_BUILTIN}/models/ControlNet/control_v11f1e_sd15_tile.safetensors
+
+RUN --mount=type=bind,from=execute,source=/,target=/execute \
+    cp -R /execute/${SD_BUILTIN}/* ${SD_BUILTIN} && \
+    cp -R /execute/docker/ /docker && \
+    cp /execute/IMAGE_TAG /IMAGE_TAG
+
+RUN sed -i ${SD_BUILTIN}/config.json -e 's/sd-v1-5-inpainting.ckpt \[c6bbc15e32\]/revAnimatedV1.2.2.safetensors \[3d1b3c42ec\]/'
+RUN sed -i ${SD_BUILTIN}/config.json -e 's/c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19/3d1b3c42ec704f3397d9e2968e3e544eda111741e10793afd78faa8148b36e12/'

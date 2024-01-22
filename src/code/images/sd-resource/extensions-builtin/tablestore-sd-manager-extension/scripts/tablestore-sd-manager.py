@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import traceback
 import urllib.request
 from datetime import datetime, timezone, timedelta
 
@@ -39,35 +40,45 @@ class Scripts(scripts.Script):
         return []
 
     def postprocess(self, p: processing.StableDiffusionProcessing, processed: processing.Processed):
-        if not self.is_enabled():
-            return
+        try:
+            if not self.is_enabled():
+                return
 
-        for index, image in enumerate(processed.images):
-            data = dict()
-            data["interrupted"] = shared.state.interrupted
-            data["skipped"] = shared.state.skipped
-            data["isTxt2Img"] = self.is_txt2img
-            data["isImg2Img"] = self.is_img2img
-            data['comments'] = getattr(processed, 'comments', None)
-            job_timestamp = datetime.strptime(processed.job_timestamp, '%Y%m%d%H%M%S')
-            data['usedTimeInSeconds'] = round(datetime.now().timestamp() - job_timestamp.timestamp())
-            data['jobStartTime'] = job_timestamp.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
-            already_saved_as = getattr(image, 'already_saved_as', None)
-            if already_saved_as.startswith("/"):
-                data['imagePath'] = already_saved_as
-            else:
-                data['imagePath'] = "%s/%s" % (scripts.shared.data_path, already_saved_as) if already_saved_as is not None else None
-            data['parameters'] = image.info['parameters']
-            all_parameters = self.__parse_parameters(data['parameters'])
-            data.update(all_parameters)
-            self.__send_data(data)
+            for index, image in enumerate(processed.images):
+                try:
+                    data = dict()
+                    data["interrupted"] = shared.state.interrupted
+                    data["skipped"] = shared.state.skipped
+                    data["isTxt2Img"] = self.is_txt2img
+                    data["isImg2Img"] = self.is_img2img
+                    data['comments'] = getattr(processed, 'comments', None)
+                    job_timestamp = datetime.strptime(processed.job_timestamp, '%Y%m%d%H%M%S')
+                    data['usedTimeInSeconds'] = round(datetime.now().timestamp() - job_timestamp.timestamp())
+                    data['jobStartTime'] = job_timestamp.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
+                    already_saved_as = getattr(image, 'already_saved_as', None)
+                    if type(already_saved_as) != str:
+                        print("already_saved_as isn't string, data:", data)
+                        continue
+                    if already_saved_as.startswith("/"):
+                        data['imagePath'] = already_saved_as
+                    else:
+                        data['imagePath'] = "%s/%s" % (scripts.shared.data_path, already_saved_as) if already_saved_as is not None else None
+                    data['parameters'] = image.info['parameters']
+                    all_parameters = self.__parse_parameters(data['parameters'])
+                    data.update(all_parameters)
+                    self.__send_data(data)
+                except Exception as e:
+                    print("table store sd extension parse image info error", e)
+                    traceback.print_exc()
+        except Exception as e:
+            print("table store sd extension error", e)
+            traceback.print_exc()
         return
 
     def __send_data(self, data: dict):
         data_as_str = json.dumps(data, ensure_ascii=False)
         try:
             req = urllib.request.Request(url=tablestore_forward_endpoint, data=bytes(data_as_str, 'utf8'), method='POST')
-            req.add_header('TOKEN', tablestore_token)
             with urllib.request.urlopen(req) as response:
                 if 300 > response.getcode() >= 200:
                     print("Tablestore sd manager write data successfully! data:", data_as_str)
