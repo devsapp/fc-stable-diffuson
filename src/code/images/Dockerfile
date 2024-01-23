@@ -467,7 +467,7 @@ COPY --from=download_models_character /3dlongbaobao.safetensors             ${SD
 COPY --from=download_models_character /longyinshaonian.safetensors          ${SD_BUILTIN}/models/Lora/longyinshaonian.safetensors
 COPY --from=download_models_character /wushishaonian.safetensors            ${SD_BUILTIN}/models/Lora/wushishaonian.safetensors
 COPY --from=download_models_character /xiaolongnv.safetensors               ${SD_BUILTIN}/models/Lora/xiaolongnv.safetensors
-COPY --from=download_models_character /control_v11f1e_sd15_tile.pth         ${SD_BUILTIN}/models/ControlNet/control_v11f1e_sd15_tile.safetensors
+COPY --from=download_models_character /control_v11f1e_sd15_tile.pth         ${SD_BUILTIN}/models/ControlNet/control_v11f1e_sd15_tile.pth
 
 RUN --mount=type=bind,from=execute,source=/,target=/execute \
     cp -R /execute/${SD_BUILTIN}/* ${SD_BUILTIN} && \
@@ -476,3 +476,4 @@ RUN --mount=type=bind,from=execute,source=/,target=/execute \
 
 RUN sed -i ${SD_BUILTIN}/config.json -e 's/sd-v1-5-inpainting.ckpt \[c6bbc15e32\]/revAnimatedV1.2.2.safetensors \[3d1b3c42ec\]/'
 RUN sed -i ${SD_BUILTIN}/config.json -e 's/c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19/3d1b3c42ec704f3397d9e2968e3e544eda111741e10793afd78faa8148b36e12/'
+RUN sed -i ${SD_BUILTIN}/config.json -e 's/"adetailer",//'

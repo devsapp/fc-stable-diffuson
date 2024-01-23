@@ -5,10 +5,10 @@ vars:
   region: "{{ region }}"
   prefix: "{{namespace}}"
   functionName: "{{ functionName }}"
-  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v14{{ else if type === '真人风格'}}realman-v14{{else if type === '轻量版'}}lite-v6{{else if type === 'TensorRT'}}tensorrt-v1{{ else }}sd1.5-v14{{/if}}"
+  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v14{{ else if type === '真人风格'}}realman-v14{{else if type === '轻量版'}}lite-v6{{else if type === 'TensorRT'}}tensorrt-v1{{else if type === '艺术字'}}character-v1{{ else }}sd1.5-v14{{/if}}"
   filemgrToken: "{{ filemgrToken || '' }}"
   enableCollect: "{{ enableCollect || '' }}"
-  filemgrFilename: "filemgr-1b1093b"
+  filemgrFilename: "filemgr-1.3.0"
   roleArn: "{{roleArn}}"
   extraArgs: ""
 

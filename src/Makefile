@@ -169,7 +169,7 @@ dev-character: build-character  ## 使用艺术字进行测试
 
 
 shell: build-anime  ## 登入 sd shell 环境
-	docker run --rm -it --gpus=all --name=sd --net=host --entrypoint="" -v ${shell pwd}/nas:/mnt/auto stable-diffusion:anime-${ANIME_VERSION} /bin/bash
+	docker run --rm -it --name=sd --net=host --entrypoint="" -v ${shell pwd}/nas:/mnt/auto stable-diffusion:character-${CHARACTER_VERSION} /bin/bash
 
 exec: ## 登入容器实例
 	docker exec -it sd /bin/bash
