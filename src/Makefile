@@ -15,12 +15,12 @@ NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
 BASE_TAG=basev10
 
-SD15_VERSION=v14
-ANIME_VERSION=v14
-REALMAN_VERSION=v14
-LITE_VERSION=v6
-TENSORRT_VERSION=v1
-CHARACTER_VERSION=v1
+SD15_VERSION=v15
+ANIME_VERSION=v15
+REALMAN_VERSION=v15
+LITE_VERSION=v7
+TENSORRT_VERSION=v2
+CHARACTER_VERSION=v2
 
 
 push: push-jp push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
@@ -127,7 +127,6 @@ dev: build-anime  ## 使用动漫风格进行测试
 	fi && \
 	docker run --rm -it --gpus=all --name=sd --net=host \
 		-e EXTRA_ARGS="--api" \
-		-e CHECK_MODEL_LOAD=1 \
 		-e FC_REGION=$$FC_REGION \
 		-e FC_ACCOUNT_ID=$$FC_ACCOUNT_ID \
 		-e ALIBABA_CLOUD_ACCESS_KEY_ID=$$ALIBABA_CLOUD_ACCESS_KEY_ID \

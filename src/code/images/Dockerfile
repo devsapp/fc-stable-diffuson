@@ -168,6 +168,8 @@ RUN aria2c -x 16 --dir "/" --out "blingdbox_v1_mix.safetensors" "https://civitai
 RUN aria2c -x 16 --dir "/" --out "GachaSpliash4.safetensors" "https://civitai.com/api/download/models/38884?type=Model&format=SafeTensor" 
 RUN aria2c -x 16 --dir "/" --out "Colorwater_v4.safetensors" "https://civitai.com/api/download/models/21173?type=Model&format=SafeTensor&size=full&fp=fp16" 
 
+RUN aria2c -x 16 --dir "/" --out "vae-ft-ema-560000-ema-pruned.ckpt" "https://huggingface.co/stabilityai/sd-vae-ft-ema-original/resolve/main/vae-ft-ema-560000-ema-pruned.ckpt?download=true"
+
 ############################# 
 #          内置模型         #
 #############################
@@ -196,7 +198,7 @@ RUN go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
 RUN mkdir -p /code && \
     git clone https://github.com/devsapp/serverless-stable-diffusion-api.git /code && \
     cd /code && \
-    git checkout 0e60836b53556e6dffa84015896de09c8cb03d20
+    git checkout 014e5ad0e43ca3cc683b086e0f860898e5c08207
 
 WORKDIR /code
 
@@ -397,7 +399,7 @@ COPY --from=download_extensions /control_v1p_sd15_illumination.safetensors ${SD_
 COPY --from=download_huggingface /models--Bingsu--adetailer ${SD_BUILTIN}/root/.cache/huggingface/hub/
 
 # 内置模型
-COPY --from=download_models /cIF8Anime2.43ol.ckpt ${SD_BUILTIN}/models/VAE/cIF8Anime2.43ol.ckpt
+COPY --from=download_models /vae-ft-ema-560000-ema-pruned.ckpt ${SD_BUILTIN}/models/VAE/vae-ft-ema-560000-ema-pruned.ckpt
 
 # COPY --from=download_models  /moxin.safetensors ${SD_BUILTIN}/models/Lora/moxin.safetensors
 COPY --from=download_models  /milkingMachine_v11.safetensors ${SD_BUILTIN}/models/Lora/milkingMachine_v11.safetensors
@@ -434,7 +436,7 @@ RUN --mount=type=bind,from=execute,source=/,target=/execute \
 
 RUN sed -i ${SD_BUILTIN}/config.json -e 's/sd-v1-5-inpainting.ckpt \[c6bbc15e32\]/mixProV4.Cqhm.safetensors \[61e23e57ea\]/'
 RUN sed -i ${SD_BUILTIN}/config.json -e 's/c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19/61e23e57ea13765152435b42d55e7062de188ca3234edb82d751cf52f7667d4f/'
-RUN sed -i ${SD_BUILTIN}/config.json -e 's/Automatic/cIF8Anime2.43ol.ckpt/'
+RUN sed -i ${SD_BUILTIN}/config.json -e 's/Automatic/vae-ft-ema-560000-ema-pruned.ckpt/'
 
 ############################# 
 #         真人版本          #

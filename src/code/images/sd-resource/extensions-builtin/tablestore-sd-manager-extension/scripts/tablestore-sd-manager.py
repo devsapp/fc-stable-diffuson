@@ -79,6 +79,7 @@ class Scripts(scripts.Script):
         data_as_str = json.dumps(data, ensure_ascii=False)
         try:
             req = urllib.request.Request(url=tablestore_forward_endpoint, data=bytes(data_as_str, 'utf8'), method='POST')
+            req.add_header('TOKEN', tablestore_token)
             with urllib.request.urlopen(req) as response:
                 if 300 > response.getcode() >= 200:
                     print("Tablestore sd manager write data successfully! data:", data_as_str)

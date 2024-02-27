@@ -3,7 +3,7 @@ Type: Project
 Name: fc-stable-diffusion-v3
 Provider:
   - 阿里云 
-Version: dev
+Version: 3.0.2
 Description: 使用serverless devs将stable-diffusion部署到阿里云函数计算上
 HomePage: https://github.com/OhYee/fc-stable-diffuson
 Tags: 
@@ -36,7 +36,7 @@ Parameters:
     namespace:
       title: 命名空间
       type: string
-      default: fc-stable-diffusion
+      default: sd-${default-suffix}
       description: 命名空间将作为函数名的前缀，用以区分不同的 sd 应用，默认挂载的 nas 目录也取决于命名空间。
     functionName:
       title: 函数名
@@ -59,6 +59,7 @@ Parameters:
         - 真人风格
         - 轻量版
         - TensorRT
+        - 艺术字
     enableCollect:
       title: 协助改善体验
       type: boolean
