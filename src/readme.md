@@ -1,16 +1,16 @@
 
-> 注：当前项目为 Serverless Devs 应用，由于应用中会存在需要初始化才可运行的变量（例如应用部署地区、服务名、函数名等等），所以**不推荐**直接 Clone 本仓库到本地进行部署或直接复制 s.yaml 使用，**强烈推荐**通过 `s init ` 的方法或应用中心进行初始化，详情可参考[部署 & 体验](#部署--体验) 。
+> 注：当前项目为 Serverless Devs 应用，由于应用中会存在需要初始化才可运行的变量（例如应用部署地区、函数名等等），所以**不推荐**直接 Clone 本仓库到本地进行部署或直接复制 s.yaml 使用，**强烈推荐**通过 `s init ${模版名称}` 的方法或应用中心进行初始化，详情可参考[部署 & 体验](#部署--体验) 。
 
-# fc-stable-diffusion 帮助文档
+# fc-stable-diffusion-v3 帮助文档
 <p align="center" class="flex justify-center">
     <a href="https://www.serverless-devs.com" class="ml-1">
-    <img src="http://editor.devsapp.cn/icon?package=fc-stable-diffusion&type=packageType">
+    <img src="http://editor.devsapp.cn/icon?package=fc-stable-diffusion-v3&type=packageType">
   </a>
-  <a href="http://www.devsapp.cn/details.html?name=fc-stable-diffusion" class="ml-1">
-    <img src="http://editor.devsapp.cn/icon?package=fc-stable-diffusion&type=packageVersion">
+  <a href="http://www.devsapp.cn/details.html?name=fc-stable-diffusion-v3" class="ml-1">
+    <img src="http://editor.devsapp.cn/icon?package=fc-stable-diffusion-v3&type=packageVersion">
   </a>
-  <a href="http://www.devsapp.cn/details.html?name=fc-stable-diffusion" class="ml-1">
-    <img src="http://editor.devsapp.cn/icon?package=fc-stable-diffusion&type=packageDownload">
+  <a href="http://www.devsapp.cn/details.html?name=fc-stable-diffusion-v3" class="ml-1">
+    <img src="http://editor.devsapp.cn/icon?package=fc-stable-diffusion-v3&type=packageDownload">
   </a>
 </p>
 
@@ -22,7 +22,7 @@
 
 <codeUrl>
 
-- [:smiley_cat: 代码](https://github.com/devsapp/fc-stable-diffuson)
+
 
 </codeUrl>
 <preview>
@@ -34,35 +34,27 @@
 
 ## 前期准备
 
-使用该项目，您需要有开通以下服务：
+使用该项目，您需要有开通以下服务并拥有对应权限：
 
 <service>
 
 
 
-| 服务 |  备注  |
-| --- |  --- |
-| 函数计算 FC |
+| 服务/业务 |  权限  | 相关文档 |
+| --- |  --- | --- |
+| 函数计算 |  创建函数 | [帮助文档](https://help.aliyun.com/product/2508973.html) [计费文档](https://help.aliyun.com/document_detail/2512928.html) |
 
 </service>
 
-推荐您拥有以下的产品权限 / 策略：
-<auth>
-</auth>
-
 <remark>
 
-您还需要注意：   
-1. 项目依赖阿里云函数计算，这会产生资费，请关注您的资源包使用情况和费用情况 
-2. 项目里面的插件安装推荐下载到本地再通过kodbox管理后台上传，因为网络关系，在线安装有失败的情况
+
 
 </remark>
 
 <disclaimers>
 
-免责声明：   
-该项目的构建镜像及应用模板完全开源，由社区开发者贡献，阿里云仅提供了算力支持；
-项目使用的sd-webui镜像内容同步自开源社区，如遇软件使用问题可以去社区查看问题答案
+
 
 </disclaimers>
 
@@ -70,78 +62,59 @@
 
 <appcenter>
    
-- :fire: 通过 [Serverless 应用中心](https://fcnext.console.aliyun.com/applications/create?template=fc-stable-diffusion) ，
-  [![Deploy with Severless Devs](https://img.alicdn.com/imgextra/i1/O1CN01w5RFbX1v45s8TIXPz_!!6000000006118-55-tps-95-28.svg)](https://fcnext.console.aliyun.com/applications/create?template=fc-stable-diffusion) 该应用。
+- :fire: 通过 [Serverless 应用中心](https://fcnext.console.aliyun.com/applications/create?template=fc-stable-diffusion-v3) ，
+  [![Deploy with Severless Devs](https://img.alicdn.com/imgextra/i1/O1CN01w5RFbX1v45s8TIXPz_!!6000000006118-55-tps-95-28.svg)](https://fcnext.console.aliyun.com/applications/create?template=fc-stable-diffusion-v3) 该应用。
    
 </appcenter>
 <deploy>
     
 - 通过 [Serverless Devs Cli](https://www.serverless-devs.com/serverless-devs/install) 进行部署：
   - [安装 Serverless Devs Cli 开发者工具](https://www.serverless-devs.com/serverless-devs/install) ，并进行[授权信息配置](https://docs.serverless-devs.com/fc/config) ；
-  - 初始化项目：`s init fc-stable-diffusion -d fc-stable-diffusion `
-  - 进入项目，并进行项目部署：`cd fc-stable-diffusion && s deploy - y`
+  - 初始化项目：`s init fc-stable-diffusion-v3 -d fc-stable-diffusion-v3`
+  - 进入项目，并进行项目部署：`cd fc-stable-diffusion-v3 && s deploy -y`
    
 </deploy>
 
-## 应用详情
+## 案例介绍
 
 <appdetail id="flushContent">
+
+本案例将 [Stable Diffusion WebUI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)，这一火热的 AIGC 项目快速创建并部署到阿里云函数计算 FC。快速体验强大的 AI 图片生成能力，实现文生图、图生图等多种功能。
+
+
+Stable Diffusion 是一款开源的扩散模型，由 CompVis、Stability AI 和 LAION 的研究人员和工程师创建。由于 Stable Diffusion 开源、扩展性强的特点，其受到了全球众多 AIGC 爱好者的追捧。根据模型网站 Civital 统计，目前最热门的模型已经超过 100 万次下载，超过 10 万次下载的模型 70 余个，各种风格、不同功能的模型超过 12 万。Stable Diffusion WebUI 在国内也很火热，通过 Stable Diffusion WebUI 进行文生图的教程在国内各大平台多次登入热搜榜、排行榜，引领了一波又一波的浪潮。
+
+
+Stable Diffusion WebUI 需要通过 GPU 算力进行运算，且部署存在一定的门槛要求。因此借助于 Serverless 开发平台，用户可以简单、方便地将 Stable Diffusion WebUI 部署至函数计算，快速感受 AIGC 的魅力。同时，开发平台还集成了包括热门模型库、云上文件管理、Serverless API 等多种定制化能力，方便不同的用户更好地使用 Stable Diffusion WebUI。
+
 </appdetail>
 
-## 使用文档
+## 使用流程
 
 <usedetail id="flushContent">
 
-### 内置模型
-
-#### 基础模型
-
-共包含三种类型的基础模型预构建镜像
-
-##### sd1.5
-
-内置 `sd-v1-5-inpainting.ckpt` 镜像，绘制能力较强，可以根据描述词得到不同形式的图像
-
-##### 动漫风格
-
-内置 `mixProV4.Cqhm.safetensors` 镜像，支持绘制出动漫风格的图像  
-（建议配合 VAE 模型 `cIF8Anime2.43ol.ckpt` 提升色彩表现能力）
-
-[模型来源地址](https://civitai.com/models/7241/mix-pro-v4)
+部署完成后，点击 WebUI 域名，进入 Stable Diffusion WebUI 页面  
+![进入 WebUI](https://img.alicdn.com/imgextra/i1/O1CN017nVu2A21J6kEkXGHo_!!6000000006963-0-tps-750-424.jpg)
 
 
-##### 真人风格
-
-内置 `chilloutmix_NiPrunedFp16Fix.safetensors` 镜像，支持绘制出真人风格的图像
-
-[模型来源地址](https://huggingface.co/samle/sd-webui-models/)
-
-搭配了对应 Lora 模型
-
-- `ChinaDollLikeness.safetensors`
-- `KoreanDollLikeness.safetensors`
-- `JapaneseDollLikeness.safetensors`
-
-#### Lora & VAE 模型
-
-|名称|类型|地址|介绍|
-|:---:|:---:|:---:|:---:|
-|`milkingMachine_v11.safetensors`|Lora|[模型来源](https://civitai.com/models/17516/abyssorangemix3-6-milk-cow-girl-2-milkingmachine-lora-by-racycats)|动漫风渲染|
-|`blingdbox_v1_mix.safetensors`|Lora|[模型来源](https://civitai.com/models/25995/blindbox?modelVersionId=32988)|盲盒画风|
-|`GachaSpliash4.safetensors`|Lora|[模型来源](https://civitai.com/models/13090/gacha-splash-lora)|带背景立绘风格|
-|`Colorwater_v4.safetensors`|Lora|[模型来源](https://civitai.com/models/16055/colorwater)|水墨风渲染|
-|`cIF8Anime2.43ol.ckpt`|VAE|[模型来源](https://civitai.com/models/7241/mix-pro-v4)|提升色彩表现|
+点击页面右侧的生成，即可生成您的第一张图片  
+![出图](https://img.alicdn.com/imgextra/i3/O1CN01DRInqG1UacZJgzUXs_!!6000000002534-0-tps-750-203.jpg)
 
 
-
-### 内置插件
-
-- [stable-diffusion-webui-chinese](https://github.com/VinsonLaro/stable-diffusion-webui-chinese) WebUI 汉化
-- [sd-prompt-translator](https://github.com/studyzy/sd-prompt-translator) 中文提示词自动翻译
-- [sdweb-easy-prompt-selector](https://github.com/blue-pen5805/sdweb-easy-prompt-selector) 提示词选择，[@路过银河​](https://zhuanlan.zhihu.com/p/630518048) 提供汉化
-
+Stable Diffusion WebUI 使用可参考任意平台的热门教程，也可以参考 Stable Diffusion 文档：https://alidocs.dingtalk.com/i/p/x9JOGOjr65om4QLAdy0mV8B0gpkodz89
 
 </usedetail>
+
+## 注意事项
+
+<matters id="flushContent">
+
+- Stable Diffusion 及 Stable Diffusion WebUI 为开源项目，代码由开源社区维护，对项目存在疑问可以前往社区寻求帮助；
+- 如果您在使用中，对于第三方插件存在疑问，可以在插件社区寻求帮助；
+- 函数计算为 Serverless 产品，数据存储在文件管理 NAS 中。如果您开启了模型管理管理功能，将会为您自动开启 NAS 服务，NAS 将根据存储的文件大小进行计费；
+- 为保证 Stable Diffusion 运行质量，默认创建的 NAS 为通用性能型 NAS，费用为标准通用型 NAS 的 5.4 倍（具体折算比例请参考 NAS 文档）。
+
+</matters>
 
 
 <devgroup>
