@@ -15,12 +15,12 @@ NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
 BASE_TAG=basev10
 
-SD15_VERSION=v16
-ANIME_VERSION=v16
-REALMAN_VERSION=v16
-LITE_VERSION=v8
-TENSORRT_VERSION=v3
-CHARACTER_VERSION=v3
+SD15_VERSION=v17
+ANIME_VERSION=v17
+REALMAN_VERSION=v17
+LITE_VERSION=v9
+TENSORRT_VERSION=v4
+CHARACTER_VERSION=v4
 
 
 push: push-jp push-beijing push-shanghai push-shenzhen push-hangzhou ## push 镜像到所有 registry
@@ -84,7 +84,7 @@ push-hangzhou:  ## push 镜像到杭州
 	done
 
 push-ap: build ## push 镜像到新加坡
-	IMAGE=registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO} && \
+	IMAGE=registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO} && \
 	for tag in "sd1.5-${SD15_VERSION}" "anime-${ANIME_VERSION}" "realman-${REALMAN_VERSION}" "lite-${LITE_VERSION}" "tensorrt-${TENSORRT_VERSION}" "character-${CHARACTER_VERSION}"; do \
 		docker tag stable-diffusion:$$tag $$IMAGE:$$tag && \
 		docker push $$IMAGE:$$tag; \
@@ -98,8 +98,8 @@ push-jp:
 	done
 	
 push-base-ap: build ## push 镜像到新加坡
-	docker tag registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
-	docker push registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG}
+	docker tag registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \
+	docker push registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG}
 
 sync-from-ap: ## 同步新加坡镜像到其他 region
 	docker pull registry.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${BASE_TAG} && \

@@ -198,7 +198,7 @@ RUN go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
 RUN mkdir -p /code && \
     git clone https://github.com/devsapp/serverless-stable-diffusion-api.git /code && \
     cd /code && \
-    git checkout 9f73af6f7ed18403046110dd6962be262505b276
+    git checkout 9ca0f94b895ca181d5daeb98904d6705bf856237
 
 WORKDIR /code
 
