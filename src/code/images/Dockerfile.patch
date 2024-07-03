@@ -1,5 +1,0 @@
-FROM stable-diffusion:anime-v9
-
-RUN pip list | awk '/cu12/ { print $1 }' | sed 's/cu12/cu11/g' | grep -v nvidia-nvjitlink-cu11 | xargs pip install && \
-    pip list | awk '/cu12/ { print $1 }' | xargs pip uninstall -y && \
-    rm -rf ${SD_BUILTIN}/root/.cache/huggingface/hub/

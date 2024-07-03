@@ -1,0 +1,36 @@
+ARG BASE_IMAGE
+
+############################# 
+#         内置的模型        #
+#############################
+FROM python:3.10.9-slim AS models
+
+RUN apt update && apt install -y aria2
+
+RUN aria2c -x 16 --dir "/models" --out "sd-v1-5-inpainting.ckpt" "https://huggingface.co/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt"
+
+############################# 
+#      内置 sd1.5 模型      #
+#############################
+ARG BASE_IMAGE 
+FROM "$BASE_IMAGE" AS sd1.5
+
+# 内置模型放置到 builtin 目录
+RUN --mount=type=bind,from=models,source=/models,target=/models \
+    mkdir -p ${BUILTIN}/models/Stable-diffusion && \
+    cp -R /models/* ${BUILTIN}/models/Stable-diffusion/
+
+# 提前挂载模型到虚拟 NAS 中
+RUN ln -s ${BUILTIN}/models/Stable-diffusion/sd-v1-5-inpainting.ckpt ${VIRTUAL_NAS}/models/Stable-diffusion/sd-v1-5-inpainting.ckpt
+
+# 修改默认的提示词
+RUN sed -i "$BUILTIN/ui-config.json" -e 's@"txt2img/Prompt/value": ""@"txt2img/Prompt/value": "masterpiece, best quality, very detailed, extremely detailed beautiful, super detailed, tousled hair, illustration, dynamic angles, girly, fashion clothing, standing, mannequin, looking at viewer, interview, beach, beautiful detailed eyes, exquisitely beautiful face, floating, high saturation, beautiful and detailed light and shadow"@' && \
+    sed -i "$BUILTIN/ui-config.json" -e 's@"txt2img/Negative prompt/value": ""@"txt2img/Negative prompt/value": "loli,nsfw,logo,text,badhandv4,EasyNegative,ng_deepnegative_v1_75t,rev2-badprompt,verybadimagenegative_v1.3,negative_hand-neg,mutated hands and fingers,poorly drawn face,extra limb,missing limb,disconnected limbs,malformed hands,ugly"@' && \
+    sed -i "$VIRTUAL_NAS/ui-config.json" -e 's@"txt2img/Prompt/value": ""@"txt2img/Prompt/value": "masterpiece, best quality, very detailed, extremely detailed beautiful, super detailed, tousled hair, illustration, dynamic angles, girly, fashion clothing, standing, mannequin, looking at viewer, interview, beach, beautiful detailed eyes, exquisitely beautiful face, floating, high saturation, beautiful and detailed light and shadow"@' && \
+    sed -i "$VIRTUAL_NAS/ui-config.json" -e 's@"txt2img/Negative prompt/value": ""@"txt2img/Negative prompt/value": "loli,nsfw,logo,text,badhandv4,EasyNegative,ng_deepnegative_v1_75t,rev2-badprompt,verybadimagenegative_v1.3,negative_hand-neg,mutated hands and fingers,poorly drawn face,extra limb,missing limb,disconnected limbs,malformed hands,ugly"@'
+
+# 写出镜像的版本
+ARG IMAGE_TAG="${IMAGE_TAG}"
+ENV IMAGE_TAG=${IMAGE_TAG}
+
+RUN IMAGE_TAG="${IMAGE_TAG:-$(date +%y%m%d%H%M%S)}" && echo "${IMAGE_TAG}" > /IMAGE_TAG
