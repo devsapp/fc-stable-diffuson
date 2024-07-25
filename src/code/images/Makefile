@@ -10,6 +10,7 @@ REGIONS="ap-northeast-1" "cn-hangzhou" "cn-shanghai" "cn-beijing" "cn-shenzhen" 
 
 LITE_VERSION="lite-v11"
 SD15_VERSION="sd1.5-v20"
+TENSORRT_VERSION="tensorrt-v5"
 
 .PHONY: build-lite
 build-lite: ## 构建 Lite 版本
@@ -20,6 +21,11 @@ build-lite: ## 构建 Lite 版本
 build-sd1.5: ## 构建 sd 1.5
 	cd ${PWD} && \
 	DOCKER_BUILDKIT=1 docker build -f Dockerfile.sd1.5 --target sd1.5 --build-arg IMAGE_TAG=${SD15_VERSION} --build-arg BASE_IMAGE=${REPO}:${LITE_VERSION} -t ${REPO}:${SD15_VERSION} .
+
+.PHONY: build-tensorrt
+build-tensorrt: ## 构建 TensorRT
+	cd ${PWD} && \
+	DOCKER_BUILDKIT=1 docker build -f Dockerfile.tensorrt --target tensorrt --build-arg IMAGE_TAG=${TENSORRT_VERSION} --build-arg BASE_IMAGE=${REPO}:${LITE_VERSION} -t ${REPO}:${TENSORRT_VERSION} .
 
 .PHONY: build
 build: build-lite build-sd1.5 # 构建所有 sd 镜像
@@ -36,6 +42,15 @@ push-lite: build-lite ## push lite 镜像
 .PHONY: push-sd1.5
 push-sd1.5:  ## push sd1.5 镜像
 	tag=${SD15_VERSION} && \
+	for region in ${REGIONS}; do \
+		image=registry.$$region.aliyuncs.com/${NAMESPACE}/${REPO}:$$tag; \
+		docker tag ${REPO}:$$tag $$image; \
+		docker push $$image; \
+	done
+
+.PHONY: push-tensorrt
+push-tensorrt:  ## push TensorRT 镜像
+	tag=${TENSORRT_VERSION} && \
 	for region in ${REGIONS}; do \
 		image=registry.$$region.aliyuncs.com/${NAMESPACE}/${REPO}:$$tag; \
 		docker tag ${REPO}:$$tag $$image; \

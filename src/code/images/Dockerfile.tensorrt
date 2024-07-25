@@ -1,0 +1,67 @@
+ARG BASE_IMAGE
+
+############################# 
+#         内置的模型        #
+#############################
+FROM python:3.10.9-slim AS models
+
+RUN apt update && apt install -y aria2
+
+RUN aria2c -x 16 --dir "/models" --out "sd-v1-5-inpainting.ckpt" "https://huggingface.co/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt"
+
+
+FROM alpine/git:2.36.2 AS extensions
+
+# Stable-Diffusion-WebUI-TensorRT 
+RUN git clone https://github.com/NVIDIA/Stable-Diffusion-WebUI-TensorRT.git /extensions/Stable-Diffusion-WebUI-TensorRT && \
+    cd /extensions/Stable-Diffusion-WebUI-TensorRT && \
+    git reset --hard b75f5604a7e4534899c720ef8db5e15042b2b9f9
+
+
+############################# 
+#      内置 sd1.5 模型      #
+#############################
+ARG BASE_IMAGE 
+FROM "$BASE_IMAGE" AS tensorrt
+
+# 将 venv 指回到容器内
+RUN grep -r "/venv" /venv/bin/* | awk -F: "{print \$1}" | xargs -I {} sed "s@${NAS_DIR}/venv@/venv@g" -i {}
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install importlib_metadata nvidia-cudnn-cu11==8.9.4.25 && \
+    pip install --pre --extra-index-url https://pypi.nvidia.com tensorrt==9.0.1.post11.dev4 --no-cache-dir tensorrt && \
+    pip uninstall -y nvidia-cudnn-cu11 && \
+    pip install polygraphy --extra-index-url https://pypi.ngc.nvidia.com && \
+    pip install onnx-graphsurgeon --extra-index-url https://pypi.ngc.nvidia.com && \
+    pip install optimum 
+
+# 内置模型放置到 builtin 目录
+RUN --mount=type=bind,from=models,source=/models,target=/models \
+    mkdir -p ${BUILTIN}/models/Stable-diffusion && \
+    cp -R /models/* ${BUILTIN}/models/Stable-diffusion/
+
+# 挂载插件
+RUN --mount=type=bind,from=extensions,source=/extensions,target=/extensions \
+    mkdir -p ${BUILTIN}/extensions/ && \
+    cp -R /extensions/Stable-Diffusion-WebUI-TensorRT ${BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT
+
+# 提前挂载模型、插件到虚拟 NAS 中
+RUN ln -s ${BUILTIN}/models/Stable-diffusion/sd-v1-5-inpainting.ckpt ${VIRTUAL_NAS}/models/Stable-diffusion/sd-v1-5-inpainting.ckpt && \
+    ln -s ${BUILTIN}/extensions/Stable-Diffusion-WebUI-TensorRT ${VIRTUAL_NAS}/extensions/Stable-Diffusion-WebUI-TensorRT
+
+# 修改默认的提示词
+RUN sed -i "$BUILTIN/ui-config.json" -e 's@"txt2img/Prompt/value": ""@"txt2img/Prompt/value": "masterpiece, best quality, very detailed, extremely detailed beautiful, super detailed, tousled hair, illustration, dynamic angles, girly, fashion clothing, standing, mannequin, looking at viewer, interview, beach, beautiful detailed eyes, exquisitely beautiful face, floating, high saturation, beautiful and detailed light and shadow"@' && \
+    sed -i "$BUILTIN/ui-config.json" -e 's@"txt2img/Negative prompt/value": ""@"txt2img/Negative prompt/value": "loli,nsfw,logo,text,badhandv4,EasyNegative,ng_deepnegative_v1_75t,rev2-badprompt,verybadimagenegative_v1.3,negative_hand-neg,mutated hands and fingers,poorly drawn face,extra limb,missing limb,disconnected limbs,malformed hands,ugly"@' && \
+    sed -i "$VIRTUAL_NAS/ui-config.json" -e 's@"txt2img/Prompt/value": ""@"txt2img/Prompt/value": "masterpiece, best quality, very detailed, extremely detailed beautiful, super detailed, tousled hair, illustration, dynamic angles, girly, fashion clothing, standing, mannequin, looking at viewer, interview, beach, beautiful detailed eyes, exquisitely beautiful face, floating, high saturation, beautiful and detailed light and shadow"@' && \
+    sed -i "$VIRTUAL_NAS/ui-config.json" -e 's@"txt2img/Negative prompt/value": ""@"txt2img/Negative prompt/value": "loli,nsfw,logo,text,badhandv4,EasyNegative,ng_deepnegative_v1_75t,rev2-badprompt,verybadimagenegative_v1.3,negative_hand-neg,mutated hands and fingers,poorly drawn face,extra limb,missing limb,disconnected limbs,malformed hands,ugly"@' && \
+    sed -i "s/\"sd_vae\",/\"sd_vae\",\n\"sd_unet\"/g" "${BUILTIN}/config.json" && \
+    sed -i "s/\"sd_vae\",/\"sd_vae\",\n\"sd_unet\"/g" "${VIRTUAL_NAS}/config.json"
+
+# 写出镜像的版本
+ARG IMAGE_TAG="${IMAGE_TAG}"
+ENV IMAGE_TAG=${IMAGE_TAG}
+
+RUN --mount=type=bind,source=/sd-resource,target=/ctx \
+    bash /ctx/init.bash
+
+RUN find -L ${VIRTUAL_NAS} -type l -delete

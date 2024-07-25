@@ -5,7 +5,7 @@ vars:
   region: "{{ region }}"
   prefix: "{{namespace}}"
   functionName: "{{ functionName }}"
-  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v18{{ else if type === '真人风格'}}realman-v18{{else if type === '轻量版'}}lite-v11{{else if type === 'TensorRT'}}tensorrt-v4{{else if type === '艺术字'}}character-v4{{ else }}sd1.5-v20{{/if}}"
+  imageUrl: "registry.{{region}}.aliyuncs.com/aliyun-fc/fc-stable-diffusion:{{ if type === '动漫风格' }}anime-v16{{ else if type === '真人风格'}}realman-v16{{else if type === '轻量版'}}lite-v11{{else if type === 'TensorRT'}}tensorrt-v5{{else if type === '艺术字'}}character-v3{{ else }}sd1.5-v20{{/if}}"
   filemgrToken: "{{ filemgrToken || '' }}"
   enableCollect: "{{ enableCollect || '' }}"
   filemgrFilename: "filemgr-1.3.0"
@@ -39,8 +39,6 @@ resources:
         image: ${vars.imageUrl}
         webServerMode: true
         port: 7860
-        entrypoint:
-          - /docker/entrypoint.bash
       instanceConcurrency: 100
       memorySize: 32768
       environmentVariables:

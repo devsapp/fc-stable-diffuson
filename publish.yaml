@@ -3,7 +3,7 @@ Type: Project
 Name: fc-stable-diffusion-v3
 Provider:
   - 阿里云 
-Version: 3.0.5
+Version: 3.0.8
 # Version: dev
 Description: 使用serverless devs将stable-diffusion部署到阿里云函数计算上
 HomePage: https://github.com/devsapp/fc-stable-diffuson
@@ -48,11 +48,11 @@ Parameters:
       default: sd
       description: 您可以根据需要多次创建该应用，通过函数名来区分出不同的镜像地址
     type:
-      title: 绘图类型
+      title: 镜像选择
       type: string
       default: SD1.5
       description: |+
-        根据不同的绘图风格，将会自动为您选择不同的社区镜像以供测试。
+        不同的镜像将内置不同的模型与插件，请选择您希望的模型插件组合。
         注意：
         函数计算是 Serverless 架构形式的计算平台，所有的容器镜像、代码、参考示例、开源信息均为用户自行所有，不作为函数计算本身提供的服务；
         当前应用仅为案例，供使用者参考和学习使用，如果有生产使用需要，需要使用者自行完善和优化；
