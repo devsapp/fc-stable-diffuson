@@ -71,7 +71,7 @@ done
 
 # 要复制的文件，主要涉及 Docker 构建上下文附加的文件
 declare -A copy_folder
-for dir in "configs" "embeddings" "extensions" "extensions-builtin" \
+for dir in "configs" "embeddings" "extensions-builtin" \
   "localizations" "models"; do
   copy_folder["/ctx/${dir}/"]="${BUILTIN}/${dir}"
 done

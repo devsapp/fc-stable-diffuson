@@ -8,8 +8,8 @@ NAMESPACE=aliyun-fc
 REPO=fc-stable-diffusion
 REGIONS="ap-northeast-1" "cn-hangzhou" "cn-shanghai" "cn-beijing" "cn-shenzhen" "ap-southeast-1" "us-east-1"
 
-LITE_VERSION="lite-v11"
-SD15_VERSION="sd1.5-v20"
+LITE_VERSION="lite-v12"
+SD15_VERSION="sd1.5-v21"
 TENSORRT_VERSION="tensorrt-v5"
 
 .PHONY: build-lite
@@ -72,7 +72,7 @@ dev: build-sd1.5  ## 使用动漫风格进行测试
 		-e ALIBABA_CLOUD_ACCESS_KEY_ID=$$ALIBABA_CLOUD_ACCESS_KEY_ID \
 		-e ALIBABA_CLOUD_ACCESS_KEY_SECRET=$$ALIBABA_CLOUD_ACCESS_KEY_SECRET \
 		-v ${shell pwd}/nas:/mnt/auto \
-		stable-diffusion:anime-${ANIME_VERSION}
+		${REPO}:${SD15_VERSION}
 
 shell: build-anime  ## 登入 sd shell 环境
 	docker run --rm -it --name=sd --net=host --entrypoint="" -v ${shell pwd}/nas:/mnt/auto stable-diffusion:character-${CHARACTER_VERSION} /bin/bash

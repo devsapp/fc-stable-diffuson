@@ -55,7 +55,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 #############################
 FROM alpine/git:2.36.2 AS repos
 
-ARG SHA=a30b19dd5536f463222e484aef2daf466b49ee85
+ARG SHA=82a973c0
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /code && \
     cd /code && \
     git reset --hard ${SHA}
@@ -124,6 +124,8 @@ RUN aria2c -x 8 --dir "/" --out "detection_Resnet50_Final.pth" "https://github.c
 RUN aria2c -x 8 --dir "/" --out "parsing_parsenet.pth" "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/parsing_parsenet.pth" 
 RUN aria2c -x 8 --dir "/" --out "model_base_caption_capfilt_large.pth" "https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_caption_capfilt_large.pth" 
 RUN aria2c -x 8 --dir "/" --out "model-resnet_custom_v3.pt" "https://github.com/AUTOMATIC1111/TorchDeepDanbooru/releases/download/v1/model-resnet_custom_v3.pt" 
+RUN aria2c -x 8 --dir "/" --out "clip_l.safetensors" "https://huggingface.co/AUTOMATIC/stable-diffusion-3-medium-text-encoders/resolve/main/clip_l.safetensors"
+RUN aria2c -x 8 --dir "/" --out "clip_g.safetensors" "https://huggingface.co/AUTOMATIC/stable-diffusion-3-medium-text-encoders/resolve/main/clip_g.safetensors"
 
 
 ############################# 
@@ -198,6 +200,8 @@ COPY --from=download_sdwebui /parsing_parsenet.pth ${BUILTIN}/repositories/CodeF
 # DeepBooru 反向推导提示词 614M
 COPY --from=download_sdwebui /model-resnet_custom_v3.pt ${BUILTIN}/models/torch_deepdanbooru/model-resnet_custom_v3.pt
 
+COPY --from=download_sdwebui /clip_g.safetensors ${BUILTIN}/models/CLIP/clip_g.safetensors
+COPY --from=download_sdwebui /clip_l.safetensors ${BUILTIN}/models/CLIP/clip_l.safetensors
 WORKDIR ${SD_DIR}
 
 ENTRYPOINT [ "/docker/entrypoint.bash" ]
