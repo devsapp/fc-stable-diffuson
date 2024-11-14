@@ -60,7 +60,7 @@ push-tensorrt:  ## push TensorRT 镜像
 push: push-lite push-sd1.5 # 推送所有 sd 镜像
 
 
-dev: build-sd1.5  ## 使用动漫风格进行测试
+dev: ## 使用动漫风格进行测试
 	@eval $(shell for l in $(shell cat .env | grep -v '#'); do echo export $$l; done) && \
 	if [ -z "$${FC_REGION}" ] || [ -z "$${FC_ACCOUNT_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_ID}" ] || [ -z "$${ALIBABA_CLOUD_ACCESS_KEY_SECRET}" ]; then \
 		echo "Please set FC_REGION, FC_ACCOUNT_ID, ALIBABA_CLOUD_ACCESS_KEY_ID, ALIBABA_CLOUD_ACCESS_KEY_SECRET in .env"; \
@@ -71,11 +71,12 @@ dev: build-sd1.5  ## 使用动漫风格进行测试
 		-e FC_ACCOUNT_ID=$$FC_ACCOUNT_ID \
 		-e ALIBABA_CLOUD_ACCESS_KEY_ID=$$ALIBABA_CLOUD_ACCESS_KEY_ID \
 		-e ALIBABA_CLOUD_ACCESS_KEY_SECRET=$$ALIBABA_CLOUD_ACCESS_KEY_SECRET \
+		-e HF_HUB_OFFLINE=1 \
 		-v ${shell pwd}/nas:/mnt/auto \
 		${REPO}:${SD15_VERSION}
 
-shell: build-anime  ## 登入 sd shell 环境
-	docker run --rm -it --name=sd --net=host --entrypoint="" -v ${shell pwd}/nas:/mnt/auto stable-diffusion:character-${CHARACTER_VERSION} /bin/bash
+shell: ## 登入 sd shell 环境
+	docker run --rm -it --name=sd --net=host --entrypoint="" -v ${shell pwd}/nas:/mnt/auto ${REPO}:${SD15_VERSION} /bin/bash
 
 exec: ## 登入容器实例
 	docker exec -it sd /bin/bash

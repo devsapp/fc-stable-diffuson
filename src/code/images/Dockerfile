@@ -91,8 +91,6 @@ RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui-assets /co
 
 
 
-
-
 ############################# 
 #  sdwebui 需要的 hf 模型   #
 #############################
@@ -107,6 +105,12 @@ RUN mkdir -p /sd-prompt-translator && python /init/sd-prompt-translator.py /sd-p
 RUN mkdir -p /bert-base-uncased-cache && python /init/bert-base-uncased.py /bert-base-uncased-cache
 RUN mkdir -p /clip-vit-large-patch14 && python /init/clip-vit-large-patch14.py /clip-vit-large-patch14
 RUN mkdir -p /models--Bingsu--adetailer && python /init/bingsu-adetailer.py /models--Bingsu--adetailer
+
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt update && \
+    apt install -y tar
+    
+RUN tar -C /init -xvf /init/models--google--t5-v1_1-xxl.tar.gz 
 
 
 ############################# 
@@ -191,6 +195,9 @@ ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 # 启动的时候会下载这个
 COPY --from=download_huggingface /clip-vit-large-patch14  ${BUILTIN}/root/.cache/huggingface/hub/
+RUN --mount=type=bind,from=download_huggingface,source=/init,target=/init \
+    mkdir -p ${BUILTIN}/root/.cache/huggingface/hub/ && \
+    cp -R /init/models--google--t5-v1_1-xxl ${BUILTIN}/root/.cache/huggingface/hub/
 
 # 面部修复 + 高分辨率修复 359M + 104M + 81.4M
 COPY --from=download_sdwebui /codeformer-v0.1.0.pth ${BUILTIN}/models/Codeformer/codeformer-v0.1.0.pth
