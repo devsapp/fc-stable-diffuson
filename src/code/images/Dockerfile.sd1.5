@@ -12,7 +12,7 @@ RUN aria2c -x 16 --dir "/models" --out "sd-v1-5-inpainting.ckpt" "https://huggin
 ############################# 
 #      内置 sd1.5 模型      #
 #############################
-ARG BASE_IMAGE 
+ARG BASE_IMAGE
 FROM "$BASE_IMAGE" AS sd1.5
 
 # 内置模型放置到 builtin 目录

@@ -55,7 +55,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 #############################
 FROM alpine/git:2.36.2 AS repos
 
-ARG SHA=a30b19dd5536f463222e484aef2daf466b49ee85
+ARG SHA=82a973c0
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /code && \
     cd /code && \
     git reset --hard ${SHA}
@@ -91,8 +91,6 @@ RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui-assets /co
 
 
 
-
-
 ############################# 
 #  sdwebui 需要的 hf 模型   #
 #############################
@@ -107,6 +105,12 @@ RUN mkdir -p /sd-prompt-translator && python /init/sd-prompt-translator.py /sd-p
 RUN mkdir -p /bert-base-uncased-cache && python /init/bert-base-uncased.py /bert-base-uncased-cache
 RUN mkdir -p /clip-vit-large-patch14 && python /init/clip-vit-large-patch14.py /clip-vit-large-patch14
 RUN mkdir -p /models--Bingsu--adetailer && python /init/bingsu-adetailer.py /models--Bingsu--adetailer
+
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt update && \
+    apt install -y tar
+    
+RUN tar -C /init -xvf /init/models--google--t5-v1_1-xxl.tar.gz 
 
 
 ############################# 
@@ -124,6 +128,8 @@ RUN aria2c -x 8 --dir "/" --out "detection_Resnet50_Final.pth" "https://github.c
 RUN aria2c -x 8 --dir "/" --out "parsing_parsenet.pth" "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/parsing_parsenet.pth" 
 RUN aria2c -x 8 --dir "/" --out "model_base_caption_capfilt_large.pth" "https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_caption_capfilt_large.pth" 
 RUN aria2c -x 8 --dir "/" --out "model-resnet_custom_v3.pt" "https://github.com/AUTOMATIC1111/TorchDeepDanbooru/releases/download/v1/model-resnet_custom_v3.pt" 
+RUN aria2c -x 8 --dir "/" --out "clip_l.safetensors" "https://huggingface.co/AUTOMATIC/stable-diffusion-3-medium-text-encoders/resolve/main/clip_l.safetensors"
+RUN aria2c -x 8 --dir "/" --out "clip_g.safetensors" "https://huggingface.co/AUTOMATIC/stable-diffusion-3-medium-text-encoders/resolve/main/clip_g.safetensors"
 
 
 ############################# 
@@ -189,6 +195,9 @@ ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 # 启动的时候会下载这个
 COPY --from=download_huggingface /clip-vit-large-patch14  ${BUILTIN}/root/.cache/huggingface/hub/
+RUN --mount=type=bind,from=download_huggingface,source=/init,target=/init \
+    mkdir -p ${BUILTIN}/root/.cache/huggingface/hub/ && \
+    cp -R /init/models--google--t5-v1_1-xxl ${BUILTIN}/root/.cache/huggingface/hub/
 
 # 面部修复 + 高分辨率修复 359M + 104M + 81.4M
 COPY --from=download_sdwebui /codeformer-v0.1.0.pth ${BUILTIN}/models/Codeformer/codeformer-v0.1.0.pth
@@ -198,6 +207,8 @@ COPY --from=download_sdwebui /parsing_parsenet.pth ${BUILTIN}/repositories/CodeF
 # DeepBooru 反向推导提示词 614M
 COPY --from=download_sdwebui /model-resnet_custom_v3.pt ${BUILTIN}/models/torch_deepdanbooru/model-resnet_custom_v3.pt
 
+COPY --from=download_sdwebui /clip_g.safetensors ${BUILTIN}/models/CLIP/clip_g.safetensors
+COPY --from=download_sdwebui /clip_l.safetensors ${BUILTIN}/models/CLIP/clip_l.safetensors
 WORKDIR ${SD_DIR}
 
 ENTRYPOINT [ "/docker/entrypoint.bash" ]
